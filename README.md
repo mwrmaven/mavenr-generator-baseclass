@@ -34,3 +34,61 @@
 > java -jar base-class-generator.jar -conf ./conf/conf.properties  
 > &ensp;&ensp;&ensp;&ensp;若想要指定配置文件，则添加命令行参数 -conf  
 > **注意：** 命令行执行会在jar包同目录下生成logs日志文件夹
+* **生成的代码格式示例如下**
+> java代码示例
+``` 
+package com.generator.entity;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ApiModel(value = "用户表实例")
+public class User {
+
+    @ApiModelProperty(value = "用户ID")
+    private Integer id;
+
+    @ApiModelProperty(value = "用户名")
+    private String username;
+}
+```
+> Mapper xml映射文件示例  
+```
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.generator.mapper.UserMapper">
+
+    <sql id="All_Columns">
+        id, username
+    </sql>
+
+    <!-- 通用——动态插入数据 -->
+    <insert id="insertSelective" parameterType="com.generator.entity.User">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+        </trim>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="username != null">
+                #{username},
+            </if>
+        </trim>
+    </insert>
+</mapper>
+```
