@@ -4,6 +4,7 @@ import com.mavenr.entity.Column;
 import com.mavenr.entity.Table;
 import com.mavenr.enums.ColumnEnum;
 import com.mavenr.util.TransferUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -61,10 +62,13 @@ public class OracleDatabase extends DatabaseAbstract {
             }
             statement.close();
 
-            // 遍历column，设置key
+            // 遍历column，设置key，以及设置字段中文名
             columnList.forEach(item -> {
                 if (columnNames.contains(item.getColumnName())) {
                     item.setPrimaryKey(true);
+                }
+                if (StringUtils.isEmpty(item.getColumnNameCn())) {
+                    item.setColumnNameCn(item.getColumnName());
                 }
             });
         } catch (SQLException e) {

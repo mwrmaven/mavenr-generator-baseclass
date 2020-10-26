@@ -5,6 +5,7 @@ import com.mavenr.entity.Table;
 import com.mavenr.enums.ColumnEnum;
 import com.mavenr.util.TransferUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -41,9 +42,13 @@ public class MysqlDatabase extends DatabaseAbstract {
                     key = true;
                 }
                 String columnName = resultSet.getString("Field");
+                String columnNameCn = resultSet.getString("Comment");
+                if (StringUtils.isEmpty(columnNameCn)) {
+                    columnNameCn = columnName;
+                }
                 Column column = Column.builder()
                         .columnName(columnName)
-                        .columnNameCn(resultSet.getString("Comment"))
+                        .columnNameCn(columnNameCn)
                         .columnType(columnType)
                         .propertyName(TransferUtil.toPropertyName(columnName))
                         .propertyType(propertyType)
