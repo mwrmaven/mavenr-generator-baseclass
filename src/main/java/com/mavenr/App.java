@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class App {
         // 加载properties配置文件
         Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream(new File(defaultFilePath)));
+            properties.load(new InputStreamReader(new FileInputStream(new File(defaultFilePath)), "UTF-8"));
         } catch (IOException e) {
             System.out.println(defaultFilePath + " 文件不存在！");
             return;
@@ -64,6 +65,7 @@ public class App {
         String password = properties.getProperty("database.password");
         // 数据库表名（若database.allTables=true，则该条不生效）
         String tableName = properties.getProperty("database.tableName");
+
         // 数据库表名注释
         String tableNameCn = properties.getProperty("database.tableNameCn");
         // 是否扫描数据库中所有的表
