@@ -2,9 +2,10 @@ package com.mavenr.generator;
 
 import com.mavenr.entity.ClassInfo;
 import com.mavenr.entity.Column;
+import com.mavenr.enums.ColumnEnum;
 import com.mavenr.util.TransferUtil;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,29 +25,47 @@ public class ClassGenerator {
      * @param tableName
      * @param columnList
      */
-    public ClassInfo createEntity(String packagePath, String tableName, String tableNameCn, List<Column> columnList) {
+    public ClassInfo createEntity(String packagePath, String tableName, String tableNameCn, List<Column> columnList,
+                                  boolean lombok, boolean swagger) {
         String classBaseName = TransferUtil.toClassBaseName(tableName);
-
         StringBuilder code = new StringBuilder("package " + packagePath + ".entity;\n\n");
-        code.append("import io.swagger.annotations.ApiModel;\n" +
-                "import io.swagger.annotations.ApiModelProperty;\n" +
-                "import lombok.AllArgsConstructor;\n" +
-                "import lombok.Builder;\n" +
-                "import lombok.Data;\n" +
-                "import lombok.NoArgsConstructor;\n\n");
-        code.append("@Data\n" +
-                "@Builder\n" +
-                "@NoArgsConstructor\n" +
-                "@AllArgsConstructor\n" +
-                "@ApiModel(value = \"").append(tableNameCn).append("实例").append("\")\n");
-        code.append("public class " + classBaseName + " {\n\n");
+        StringBuilder appender = new StringBuilder();
 
+        if (lombok) {
+            code.append("import lombok.AllArgsConstructor;\n" +
+                    "import lombok.Builder;\n" +
+                    "import lombok.Data;\n" +
+                    "import lombok.NoArgsConstructor;\n");
+
+            appender.append("@Data\n" +
+                    "@Builder\n" +
+                    "@NoArgsConstructor\n" +
+                    "@AllArgsConstructor\n");
+        }
+
+        if (swagger) {
+            code.append("import io.swagger.annotations.ApiModel;\n" +
+                    "import io.swagger.annotations.ApiModelProperty;\n");
+            appender.append("@ApiModel(value = \"").append(tableNameCn).append("实例").append("\")\n");
+        }
+
+        appender.append("public class " + classBaseName + " {\n\n");
+
+        Set<String> classPaths = new HashSet<>();
         columnList.forEach(item -> {
-            code.append("    @ApiModelProperty(value = \"" + item.getColumnNameCn() + "\")\n");
-            code.append("    private " + item.getPropertyType() + " " + item.getPropertyName() + ";\n\n");
+            if (swagger) {
+                appender.append("    @ApiModelProperty(value = \"" + item.getColumnNameCn() + "\")\n");
+            }
+            appender.append("    private " + item.getPropertyType() + " " + item.getPropertyName() + ";\n\n");
+            classPaths.add(ColumnEnum.getPropertyType(item.getPropertyType()).getClassPath());
         });
-        code.append("}");
+        appender.append("}");
 
+        classPaths.forEach(item -> {
+            code.append("import ").append(item).append(";\n");
+        });
+
+        code.append("\n").append(appender);
         ClassInfo classInfo = ClassInfo.builder()
                 .fileName(classBaseName + ".java")
                 .code(code.toString())
@@ -63,31 +82,53 @@ public class ClassGenerator {
      * @param tableNameCn
      * @param columnList
      */
-    public ClassInfo createVO(String packagePath, String tableName, String tableNameCn, List<Column> columnList) {
+    public ClassInfo createVO(String packagePath, String tableName, String tableNameCn, List<Column> columnList,
+                              boolean lombok, boolean swagger) {
         String classBaseName = TransferUtil.toClassBaseName(tableName);
-
+        StringBuilder appender = new StringBuilder();
         StringBuilder code = new StringBuilder("package " + packagePath + ".vo;\n\n");
-        code.append("import io.swagger.annotations.ApiModel;\n" +
-                "import io.swagger.annotations.ApiModelProperty;\n" +
-                "import lombok.AllArgsConstructor;\n" +
-                "import lombok.Data;\n" +
-                "import lombok.NoArgsConstructor;\n\n");
-        code.append("@Data\n" +
-                "@NoArgsConstructor\n" +
-                "@AllArgsConstructor\n" +
-                "@ApiModel(value = \"").append(tableNameCn).append("VO实例").append("\")\n");
-        code.append("public class " + classBaseName + "VO {\n\n");
 
+        if (lombok) {
+            code.append("import lombok.AllArgsConstructor;\n" +
+                    "import lombok.Builder;\n" +
+                    "import lombok.Data;\n" +
+                    "import lombok.NoArgsConstructor;\n");
+
+            appender.append("@Data\n" +
+                    "@Builder\n" +
+                    "@NoArgsConstructor\n" +
+                    "@AllArgsConstructor\n");
+        }
+
+        if (swagger) {
+            code.append("import io.swagger.annotations.ApiModel;\n" +
+                    "import io.swagger.annotations.ApiModelProperty;\n");
+            appender.append("@ApiModel(value = \"").append(tableNameCn).append("VO实例").append("\")\n");
+        }
+
+        appender.append("public class " + classBaseName + "VO {\n\n");
+
+        Set<String> classPaths = new HashSet<>();
         columnList.forEach(item -> {
-            code.append("    @ApiModelProperty(value = \"" + item.getColumnNameCn() + "\")\n");
-            code.append("    private " + item.getPropertyType() + " " + item.getPropertyName() + ";\n\n");
+            if (swagger) {
+                appender.append("    @ApiModelProperty(value = \"" + item.getColumnNameCn() + "\")\n");
+            }
+            appender.append("    private " + item.getPropertyType() + " " + item.getPropertyName() + ";\n\n");
+            classPaths.add(ColumnEnum.getPropertyType(item.getPropertyType()).getClassPath());
         });
-        code.append("    @ApiModelProperty(value = \"当前页\")\n");
-        code.append("    private Integer pageNum;\n\n");
-        code.append("    @ApiModelProperty(value = \"每页数据条数\")\n");
-        code.append("    private Integer pageSize;\n\n");
 
-        code.append("}");
+        classPaths.forEach(item -> {
+            code.append("import ").append(item).append(";\n");
+        });
+
+        appender.append("    @ApiModelProperty(value = \"当前页\")\n");
+        appender.append("    private Integer pageNum;\n\n");
+        appender.append("    @ApiModelProperty(value = \"每页数据条数\")\n");
+        appender.append("    private Integer pageSize;\n\n");
+
+        appender.append("}");
+
+        code.append("\n").append(appender);
         ClassInfo classInfo = ClassInfo.builder()
                 .fileName(classBaseName + "VO.java")
                 .code(code.toString())

@@ -27,7 +27,8 @@ public class WriteOutUtil {
      * @param outputInterface
      * @param outPath
      */
-    public static void write(String type, TableBO tableBO, OutputInterface outputInterface, String outPath) {
+    public static void write(String type, TableBO tableBO, OutputInterface outputInterface, String outPath,
+                             boolean lombok, boolean swagger) {
         ClassGenerator classGenerator = new ClassGenerator();
         String packagePath = tableBO.getPackagePath();
         List<Table> tableList = tableBO.getTableList();
@@ -41,10 +42,10 @@ public class WriteOutUtil {
                 log.error(tableName + "表中字段为空");
             } else {
                 try {
-                    ClassInfo entity = classGenerator.createEntity(packagePath, tableName, tableNameCn, columns);
+                    ClassInfo entity = classGenerator.createEntity(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     outputInterface.push(entity.getCode(), entity.getFileName(), outPath);
 
-                    ClassInfo vo = classGenerator.createVO(packagePath, tableName, tableNameCn, columns);
+                    ClassInfo vo = classGenerator.createVO(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     outputInterface.push(vo.getCode(), vo.getFileName(), outPath);
 
                     ClassInfo mapper = classGenerator.createMapper(packagePath, tableName);

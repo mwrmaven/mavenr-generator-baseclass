@@ -28,12 +28,25 @@ public class App {
 
         System.out.println("默认读取当前路径下的conf.properties配置文件\n" +
                 "若要读取指定文件，请使用 -conf 命令参数指定文件的全路径，示例如下：\n" +
-                "java -jar base-class-generator.jar -conf ./conf/conf.properties\n\n");
+                "java -jar base-class-generator.jar -conf ./conf/conf.properties\n" +
+                "如果不需要lombok注解，可以在命令行中添加 -nolombok；\n" +
+                "如果不需要swagger注解，可以在命令行中添加 -noswagger；\n\n");
 
+        boolean lombok = true;
+        boolean swagger = true;
         String defaultFilePath = "." + File.separator + "conf.properties";
         for (int i = 0; i < args.length; i++) {
             if ("-conf".equalsIgnoreCase(args[i])) {
                 defaultFilePath = args[++i];
+                continue;
+            }
+            if ("-nolombok".equals(args[i])) {
+                lombok = false;
+                continue;
+            }
+            if ("-noswagger".equals(args[i])) {
+                swagger = false;
+                continue;
             }
         }
         System.out.println("开始读取配置文件：" + defaultFilePath);
@@ -41,7 +54,11 @@ public class App {
         // 加载properties配置文件
         Properties properties = new Properties();
         try {
-            properties.load(new InputStreamReader(new FileInputStream(new File(defaultFilePath)), "UTF-8"));
+            if (("." + File.separator + "conf.properties").equals(defaultFilePath)) {
+                properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
+            } else {
+                properties.load(new InputStreamReader(new FileInputStream(new File(defaultFilePath)), "UTF-8"));
+            }
         } catch (IOException e) {
             System.out.println(defaultFilePath + " 文件不存在！");
             return;
@@ -101,7 +118,7 @@ public class App {
                 .build();
 
         // 根据tableBOList生成code代码并将代码导出到文件
-        WriteOutUtil.write(type, tableBO, new OutToFile(), outPath);
+        WriteOutUtil.write(type, tableBO, new OutToFile(), outPath, lombok, swagger);
         // 关闭数据库连接
         ConnectionUtil.closeConnection(connection);
         System.out.println("程序执行完毕，文件输出路径为：" + outPath);
