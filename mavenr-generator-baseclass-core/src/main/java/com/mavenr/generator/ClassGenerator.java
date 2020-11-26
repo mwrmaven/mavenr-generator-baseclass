@@ -121,9 +121,13 @@ public class ClassGenerator {
             code.append("import ").append(item).append(";\n");
         });
 
-        appender.append("    @ApiModelProperty(value = \"当前页\")\n");
+        if (swagger) {
+            appender.append("    @ApiModelProperty(value = \"当前页\")\n");
+        }
         appender.append("    private Integer pageNum;\n\n");
-        appender.append("    @ApiModelProperty(value = \"每页数据条数\")\n");
+        if (swagger) {
+            appender.append("    @ApiModelProperty(value = \"每页数据条数\")\n");
+        }
         appender.append("    private Integer pageSize;\n\n");
 
         appender.append("}");
