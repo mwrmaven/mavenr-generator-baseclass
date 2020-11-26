@@ -32,7 +32,9 @@
 > java -jar base-class-generator.jar  
 > &ensp;&ensp;&ensp;&ensp;命令行执行默认读取jar包同目录下的conf.properties配置文件  
 > java -jar base-class-generator.jar -conf ./conf/conf.properties  
-> &ensp;&ensp;&ensp;&ensp;若想要指定配置文件，则添加命令行参数 -conf  
+> &ensp;&ensp;&ensp;&ensp;若想要指定配置文件，则添加命令行参数 -conf；  
+> &ensp;&ensp;&ensp;&ensp;如果不需要lombok注解，可以在命令行中添加 -nolombok；  
+> &ensp;&ensp;&ensp;&ensp;如果不需要swagger注解，可以在命令行中添加 -noswagger；  
 > **注意：** 命令行执行会在jar包同目录下生成logs日志文件夹
 * **生成的代码格式示例如下**
 > java代码示例
