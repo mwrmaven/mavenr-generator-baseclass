@@ -10,6 +10,7 @@
     <version>1.0</version>
     <modules>
         <module>mavenr-generator-baseclass-core</module>
+        <module>mavenr-generator-baseclass-web</module>
     </modules>
 
     <name>mavenr-generator-baseclass</name>
