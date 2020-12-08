@@ -403,6 +403,7 @@ public class ClassGenerator {
         String classBaseName = TransferUtil.toClassBaseName(tableName);
         String variable = TransferUtil.toPropertyName(tableName);
         StringBuilder code = new StringBuilder("package " + packagePath + ".service.impl;\n\n");
+        code.append("import com.github.pagehelper.Page;\n");
         code.append("import com.github.pagehelper.PageHelper;\n");
         code.append("import com.github.pagehelper.PageInfo;\n");
         code.append("import " + packagePath + ".entity." + classBaseName + ";\n");
