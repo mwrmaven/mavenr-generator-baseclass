@@ -326,7 +326,8 @@ public class ClassGenerator {
         } else {
             code.append("        where " + columnList.get(0).getColumnName() + " = #{" + columnList.get(0).getPropertyName() + "}");
         }
-        code.append("    </update>");
+        code.append("    </update>\n");
+        code.append("</mapper>\n");
 
         ClassInfo classInfo = ClassInfo.builder()
                 .fileName(classBaseName + "Mapper.xml")
