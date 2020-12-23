@@ -54,11 +54,12 @@ public class App {
         // 加载properties配置文件
         Properties properties = new Properties();
         try {
-            if (("." + File.separator + "conf.properties").equals(defaultFilePath)) {
-                properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
-            } else {
-                properties.load(new InputStreamReader(new FileInputStream(new File(defaultFilePath)), "UTF-8"));
-            }
+            properties.load(new InputStreamReader(new FileInputStream(new File(defaultFilePath)), "UTF-8"));
+//            if (("." + File.separator + "conf.properties").equals(defaultFilePath)) {
+//                properties.load(ClassLoader.getSystemResourceAsStream("conf.properties"));
+//            } else {
+//                properties.load(new InputStreamReader(new FileInputStream(new File(defaultFilePath)), "UTF-8"));
+//            }
         } catch (IOException e) {
             System.out.println(defaultFilePath + " 文件不存在！");
             return;
