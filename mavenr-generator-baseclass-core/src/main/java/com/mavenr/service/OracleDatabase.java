@@ -34,6 +34,9 @@ public class OracleDatabase extends DatabaseAbstract {
             ResultSet resultSet = statement.executeQuery(showColumns);
             while (resultSet.next()) {
                 String columnType = resultSet.getString("DATA_TYPE");
+                if (columnType.contains("(")) {
+                    columnType = columnType.substring(0, columnType.indexOf("("));
+                }
                 ColumnEnum columnEnum = ColumnEnum.getColumnType(columnType);
                 String propertyType = columnType;
                 if (columnEnum != null) {
