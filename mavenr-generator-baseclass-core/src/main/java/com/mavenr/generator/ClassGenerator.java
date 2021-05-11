@@ -43,19 +43,15 @@ public class ClassGenerator {
                     "@AllArgsConstructor\n");
         }
 
-        if (swagger) {
-            code.append("import io.swagger.annotations.ApiModel;\n" +
-                    "import io.swagger.annotations.ApiModelProperty;\n");
-            appender.append("@ApiModel(value = \"").append(tableNameCn).append("实例").append("\")\n");
-        }
+        code.append("import javax.persistence.Column;\n" +
+                "import javax.persistence.Table;\n");
 
+        appender.append("@Table(name = \"" + tableName + "\")\n");
         appender.append("public class " + classBaseName + " {\n\n");
 
         Set<String> classPaths = new HashSet<>();
         columnList.forEach(item -> {
-            if (swagger) {
-                appender.append("    @ApiModelProperty(value = \"" + item.getColumnNameCn() + "\")\n");
-            }
+            appender.append("@Column(name = \"" + item.getColumnName() + "\")\n");
             appender.append("    private " + item.getPropertyType() + " " + item.getPropertyName() + ";\n\n");
             classPaths.add(ColumnEnum.getPropertyType(item.getPropertyType()).getClassPath());
         });
