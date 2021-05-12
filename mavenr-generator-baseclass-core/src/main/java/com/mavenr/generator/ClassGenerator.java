@@ -223,9 +223,10 @@ public class ClassGenerator {
             Column column = first.get();
             code.append("        where " + column.getColumnName() + " = #{" + column.getPropertyName() + "}\n");
         } else {
-            code.append("        where " + columnList.get(0).getColumnName() + " = #{" + columnList.get(0).getPropertyName() + "}");
+            code.append("        where " + columnList.get(0).getColumnName() + " = #{" + columnList.get(0).getPropertyName() + "}\n");
         }
         code.append("    </update>");
+        code.append("</mapper>\n");
 
         ClassInfo classInfo = ClassInfo.builder()
                 .fileName(classBaseName + "Mapper.xml")
