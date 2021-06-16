@@ -51,7 +51,7 @@ public class ClassGenerator {
 
         Set<String> classPaths = new HashSet<>();
         columnList.forEach(item -> {
-            appender.append("@Column(name = \"" + item.getColumnName() + "\")\n");
+            appender.append("    @Column(name = \"" + item.getColumnName() + "\")\n");
             appender.append("    private " + item.getPropertyType() + " " + item.getPropertyName() + ";\n\n");
             classPaths.add(ColumnEnum.getPropertyType(item.getPropertyType()).getClassPath());
         });
