@@ -225,7 +225,7 @@ public class ClassGenerator {
         } else {
             code.append("        where " + columnList.get(0).getColumnName() + " = #{" + columnList.get(0).getPropertyName() + "}\n");
         }
-        code.append("    </update>");
+        code.append("    </update>\n");
         code.append("</mapper>\n");
 
         ClassInfo classInfo = ClassInfo.builder()
