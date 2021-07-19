@@ -401,9 +401,13 @@ public class ClassGenerator {
         code.append("import java.util.List;\n\n");
         code.append("@Mapper\n");
         code.append("public interface " + classBaseName + "Mapper {\n\n");
+        code.append(functionComment("通用——动态查询数据", variable));
         code.append("    List<" + classBaseName + "> selectByModel(" + classBaseName + " " + variable + ");\n\n");
+        code.append(functionComment("通用——动态插入数据", variable));
         code.append("    int insertSelective(" + classBaseName + " " + variable + ");\n\n");
+        code.append(functionComment("通用——批量插入数据", "insertList"));
         code.append("    int insertList(List<" + classBaseName + "> insertList);\n\n");
+        code.append(functionComment("动态更新——根据主键更新", variable));
         code.append("    int updateByPrimaryKeySelective(" + classBaseName + " " + variable + ");\n\n");
         code.append("}");
 
@@ -429,10 +433,16 @@ public class ClassGenerator {
         code.append("import " + packagePath + ".vo." + classBaseName + "VO;\n\n");
         code.append("import java.util.List;\n\n");
         code.append("public interface " + classBaseName + "Service {\n\n");
+
+        code.append(functionComment("动态分页查询数据集", variable));
         code.append("    PageInfo<" + classBaseName + "> selectByModel(" + classBaseName + "VO " + variable + "VO);\n\n");
+        code.append(functionComment("动态查询数据集", variable));
         code.append("    List<" + classBaseName + "> selectList(" + classBaseName + " " + variable + ");\n\n");
+        code.append(functionComment("动态插入数据", variable));
         code.append("    int insertSelective(" + classBaseName + " " + variable + ");\n\n");
+        code.append(functionComment("批量插入数据", "insertList"));
         code.append("    int insertList(List<" + classBaseName + "> insertList);\n\n");
+        code.append(functionComment("动态更新数据", variable));
         code.append("    int updateByPrimaryKeySelective(" + classBaseName + " " + variable + ");\n\n");
         code.append("}");
 
@@ -441,6 +451,16 @@ public class ClassGenerator {
                 .code(code.toString())
                 .build();
         return classInfo;
+    }
+
+    private StringBuilder functionComment(String cn, String param) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("    /**\n");
+        sb.append("     * " + cn + "\n");
+        sb.append("     * @param " + param + "\n");
+        sb.append("     * @return\n");
+        sb.append("     */\n");
+        return sb;
     }
 
     /**
@@ -468,6 +488,7 @@ public class ClassGenerator {
         code.append("public class " + classBaseName + "ServiceImpl implements " + classBaseName + "Service {\n\n");
         code.append("    @Autowired\n");
         code.append("    private " + classBaseName + "Mapper " + variable + "Mapper;\n\n");
+        code.append(functionComment("动态分页查询数据集", variable));
         code.append("    @Override\n");
         code.append("    public PageInfo<" + classBaseName + "> selectByModel(" + classBaseName + "VO " + variable + "VO) {\n");
         code.append("        " + classBaseName + " " + variable + " = " + classBaseName + ".builder()\n");
@@ -485,21 +506,25 @@ public class ClassGenerator {
         code.append("        result.setPages(objects.getPages());\n");
         code.append("        return result;\n");
         code.append("    }\n\n");
+        code.append(functionComment("动态查询数据集", variable));
         code.append("    @Override\n");
         code.append("    public List<" + classBaseName + "> selectList(" + classBaseName + " " + variable + ") {\n");
         code.append("        List<" + classBaseName + "> all = " + variable + "Mapper.selectByModel(" + variable + ");\n");
         code.append("        return all;\n");
         code.append("    }\n\n");
+        code.append(functionComment("动态插入数据", variable));
         code.append("    @Override\n");
         code.append("    public int insertSelective(" + classBaseName + " " + variable + ") {\n");
         code.append("        int result = " + variable + "Mapper.insertSelective(" + variable + ");\n");
         code.append("        return result;\n");
         code.append("    }\n\n");
+        code.append(functionComment("批量插入数据", "insertList"));
         code.append("    @Override\n");
         code.append("    public int insertList(List<" + classBaseName + "> insertList" + ") {\n");
         code.append("        int result = " + variable + "Mapper.insertList(insertList);\n");
         code.append("        return result;\n");
         code.append("    }\n\n");
+        code.append(functionComment("动态更新数据", variable));
         code.append("    @Override\n");
         code.append("    public int updateByPrimaryKeySelective(" + classBaseName + " " + variable + ") {\n");
         code.append("        int result = " + variable + "Mapper.updateByPrimaryKeySelective(" + variable + ");\n");
