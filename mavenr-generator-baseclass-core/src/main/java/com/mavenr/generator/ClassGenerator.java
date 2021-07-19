@@ -51,6 +51,9 @@ public class ClassGenerator {
 
         Set<String> classPaths = new HashSet<>();
         columnList.forEach(item -> {
+            appender.append("    /**\n");
+            appender.append("    * " + item.getColumnNameCn() + "\n");
+            appender.append("    */\n");
             appender.append("    @Column(name = \"" + item.getColumnName() + "\")\n");
             appender.append("    private " + item.getPropertyType() + " " + item.getPropertyName() + ";\n\n");
             classPaths.add(ColumnEnum.getPropertyType(item.getPropertyType()).getClassPath());
@@ -170,8 +173,12 @@ public class ClassGenerator {
         code.append("        </trim>\n");
         code.append("        <trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">\n");
         columnList.forEach(item -> {
+            String type = item.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
             code.append("            <if test=\"" + item.getPropertyName() + " != null\">\n");
-            code.append("                #{" + item.getPropertyName() + "},\n");
+            code.append("                #{" + item.getPropertyName() + ", jdbcType=" + type + "},\n");
             code.append("            </if>\n");
         });
         code.append("        </trim>\n");
@@ -186,10 +193,14 @@ public class ClassGenerator {
         code.append("            (\n");
         Stream.iterate(0, i -> i + 1).limit(columnList.size()).forEach(index -> {
             Column column = columnList.get(index);
+            String type = column.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
             if (index == columnList.size() - 1) {
-                code.append("                #{item." + column.getPropertyName() + "}\n");
+                code.append("                #{item." + column.getPropertyName() + ", jdbcType=" + type + "},\n");
             } else {
-                code.append("                #{item." + column.getPropertyName() + "},\n");
+                code.append("                #{item." + column.getPropertyName() + ", jdbcType=" + type + "},\n");
             }
         });
         code.append("            )\n");
@@ -203,7 +214,11 @@ public class ClassGenerator {
         code.append("        select <include refid=\"All_Columns\"/> from " + tableName + " \n");
         code.append("        <where>\n");
         columnList.forEach(item -> {
-            code.append("            <if test=\"" + item.getPropertyName() + " != null\">and " + item.getColumnName() + " = #{" + item.getPropertyName() + "}</if>\n");
+            String type = item.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
+            code.append("            <if test=\"" + item.getPropertyName() + " != null\">and " + item.getColumnName() + " = #{" + item.getPropertyName() + ", jdbcType=" + type + "}</if>\n");
         });
         code.append("        </where>\n");
         code.append("    </select>\n\n");
@@ -214,16 +229,29 @@ public class ClassGenerator {
         code.append("        update " + tableName + " \n");
         code.append("        <set>\n");
         columnList.forEach(item -> {
-            code.append("            <if test=\"" + item.getPropertyName() + " != null\">" + item.getColumnName() + " = #{" + item.getPropertyName() + "},</if>\n");
+            String type = item.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
+            code.append("            <if test=\"" + item.getPropertyName() + " != null\">" + item.getColumnName() + " = #{" + item.getPropertyName() + ", jdbcType=" + type + "},</if>\n");
         });
         code.append("        </set>\n");
         Optional<Column> first = columnList.stream().filter(item -> item.isPrimaryKey() == true).findFirst();
         // 判断是否存在主键，如果是，则使用主键，否则使用第一个字段
         if (first.isPresent()) {
             Column column = first.get();
-            code.append("        where " + column.getColumnName() + " = #{" + column.getPropertyName() + "}\n");
+            String type = column.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
+            code.append("        where " + column.getColumnName() + " = #{" + column.getPropertyName() + ", jdbcType=" + type + "}\n");
         } else {
-            code.append("        where " + columnList.get(0).getColumnName() + " = #{" + columnList.get(0).getPropertyName() + "}\n");
+            Column column = columnList.get(0);
+            String type = column.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
+            code.append("        where " + column.getColumnName() + " = #{" + column.getPropertyName() + ", jdbcType=" + type + "}\n");
         }
         code.append("    </update>\n");
         code.append("</mapper>\n");
@@ -270,8 +298,12 @@ public class ClassGenerator {
         code.append("        </trim>\n");
         code.append("        <trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">\n");
         columnList.forEach(item -> {
+            String type = item.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
             code.append("            <if test=\"" + item.getPropertyName() + " != null\">\n");
-            code.append("                #{" + item.getPropertyName() + "},\n");
+            code.append("                #{" + item.getPropertyName() + ", jdbcType=" + type + "},\n");
             code.append("            </if>\n");
         });
         code.append("        </trim>\n");
@@ -285,10 +317,14 @@ public class ClassGenerator {
         code.append("            (\n");
         Stream.iterate(0, i -> i + 1).limit(columnList.size()).forEach(index -> {
             Column column = columnList.get(index);
+            String type = column.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
             if (index == columnList.size() - 1) {
-                code.append("                #{item." + column.getPropertyName() + "}\n");
+                code.append("                #{item." + column.getPropertyName() + ", jdbcType=" + type + "},\n");
             } else {
-                code.append("                #{item." + column.getPropertyName() + "},\n");
+                code.append("                #{item." + column.getPropertyName() + ", jdbcType=" + type + "},\n");
             }
         });
         code.append("            )\n");
@@ -301,7 +337,11 @@ public class ClassGenerator {
         code.append("        select <include refid=\"All_Columns\"/> from " + tableName + " \n");
         code.append("        <where>\n");
         columnList.forEach(item -> {
-            code.append("            <if test=\"" + item.getPropertyName() + " != null\">and " + item.getColumnName() + " = #{" + item.getPropertyName() + "}</if>\n");
+            String type = item.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
+            code.append("            <if test=\"" + item.getPropertyName() + " != null\">and " + item.getColumnName() + " = #{" + item.getPropertyName() + ", jdbcType=" + type + "}</if>\n");
         });
         code.append("        </where>\n");
         code.append("    </select>\n\n");
@@ -312,16 +352,29 @@ public class ClassGenerator {
         code.append("        update " + tableName + " \n");
         code.append("        <set>\n");
         columnList.forEach(item -> {
-            code.append("            <if test=\"" + item.getPropertyName() + " != null\">" + item.getColumnName() + " = #{" + item.getPropertyName() + "},</if>\n");
+            String type = item.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
+            code.append("            <if test=\"" + item.getPropertyName() + " != null\">" + item.getColumnName() + " = #{" + item.getPropertyName() + ", jdbcType=" + type + "},</if>\n");
         });
         code.append("        </set>\n");
         Optional<Column> first = columnList.stream().filter(item -> item.isPrimaryKey() == true).findFirst();
         // 判断是否存在主键，如果是，则使用主键，否则使用第一个字段
         if (first.isPresent()) {
             Column column = first.get();
-            code.append("        where " + column.getColumnName() + " = #{" + column.getPropertyName() + "}\n");
+            String type = column.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
+            code.append("        where " + column.getColumnName() + " = #{" + column.getPropertyName() + ", jdbcType=" + type + "}\n");
         } else {
-            code.append("        where " + columnList.get(0).getColumnName() + " = #{" + columnList.get(0).getPropertyName() + "}\n");
+            Column column = columnList.get(0);
+            String type = column.getColumnType();
+            if (type.equals("VARCHAR2")) {
+                type = "VARCHAR";
+            }
+            code.append("        where " + column.getColumnName() + " = #{" + column.getPropertyName() + ", jdbcType=" + type + "}\n");
         }
         code.append("    </update>\n");
         code.append("</mapper>\n");
