@@ -65,6 +65,9 @@ public class WriteOutUtil {
 
                     ClassInfo serviceImpl = classGenerator.createServiceImpl(packagePath, tableName, columns);
                     outputInterface.push(serviceImpl.getCode(), serviceImpl.getFileName(), outPath);
+
+                    ClassInfo importBo = classGenerator.createImportBo(packagePath, tableName, columns);
+                    outputInterface.push(importBo.getCode(), importBo.getFileName(), outPath);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

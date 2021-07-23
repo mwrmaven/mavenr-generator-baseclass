@@ -155,6 +155,11 @@ public class ClassGenerator {
         // 配置关联的Mapper java文件
         code.append("<mapper namespace=\"" + packagePath + ".mapper." + classBaseName + "Mapper" + "\">\n\n");
 
+        // 配置表名
+        code.append("    <sql id=\"TableName\">\n");
+        code.append("        " + tableName + "\n");
+        code.append("    </sql>\n\n");
+
         // 配置基础字段
         code.append("    <sql id=\"All_Columns\">\n");
         code.append("        " + columnList.stream().map(Column::getColumnName).collect(Collectors.joining(", ")) + "\n");
@@ -187,10 +192,10 @@ public class ClassGenerator {
         // 配置批量插入数据
         code.append("    <!-- 通用——批量插入数据 -->\n");
         code.append("    <insert id=\"insertList\" parameterType=\"java.util.List\">\n");
-        code.append("        insert all \n");
-        code.append("        <foreach collection=\"list\" item=\"item\" index=\"index\">\n");
-        code.append("            into " + tableName + "(<include refid=\"All_Columns\"/>) values \n");
-        code.append("            (\n");
+        code.append("        INSERT INTO <include refid=\"TableName\"/> (<include refid=\"All_Columns\">) \n");
+        code.append("        SELECT a.* FROM (\n");
+        code.append("        <foreach collection=\"list\" item=\"item\" index=\"index\" separator=\"union all\">\n");
+        code.append("            SELECT \n");
         Stream.iterate(0, i -> i + 1).limit(columnList.size()).forEach(index -> {
             Column column = columnList.get(index);
             String type = column.getColumnType();
@@ -198,14 +203,14 @@ public class ClassGenerator {
                 type = "VARCHAR";
             }
             if (index == columnList.size() - 1) {
-                code.append("                #{item." + column.getPropertyName() + ", jdbcType=" + type + "},\n");
+                code.append("                #{item." + column.getPropertyName() + ", jdbcType=" + type + "}\n");
             } else {
                 code.append("                #{item." + column.getPropertyName() + ", jdbcType=" + type + "},\n");
             }
         });
-        code.append("            )\n");
+        code.append("            FROM dual\n");
         code.append("        </foreach>\n");
-        code.append("        select 1 from dual\n");
+        code.append("        ) a\n");
         code.append("    </insert>\n\n");
 
         // 配置动态查询数据
@@ -540,4 +545,50 @@ public class ClassGenerator {
         return classInfo;
     }
 
+    /**
+     * 创建导出模型类
+     * @param packagePath
+     * @param tableName
+     * @param columnList
+     * @return
+     */
+    public ClassInfo createImportBo(String packagePath, String tableName, List<Column> columnList) {
+        String classBaseName = TransferUtil.toClassBaseName(tableName);
+        StringBuilder code = new StringBuilder("package " + packagePath + ";\n\n");
+        StringBuilder appender = new StringBuilder();
+
+        code.append("import com.clamc.report.submit.business.anno.SubmitReportColumn;\n" +
+                "import com.clamc.report.submit.business.anno.SubmitReportTable;\n" +
+                "import com.clamc.report.submit.business.constant.SystemParaConstant;\n" +
+                "import com.clamc.report.submit.business.sysenum.FieldType;\n" +
+                "import com.clamc.report.submit.business.sysenum.FieldValueWay;\n" +
+                "import lombok.Data;\n" +
+                "import lombok.ToString;\n" +
+                "import java.util.Date;\n");
+
+        appender.append("@Data\n" +
+                "@ToString\n" +
+                "@SubmitReportTable(tableName = \"" + tableName + "\", reportName = \"\", startRow = , endRow = , insertType = \"ALL\")\n");
+
+        appender.append("public class " + classBaseName + "BO {\n\n");
+
+        columnList.forEach(item -> {
+            String type = item.getColumnType();
+            if ("VARCHAR2".equals(type)) {
+                type = "VARCHAR";
+            }
+            appender.append("    @SubmitReportColumn(fieldName = \"" + item.getColumnName() + "\", fieldChineseName = \""
+                    + item.getColumnNameCn() + "\", fieldType = FieldType." + type + ", columnIndex = )\n");
+            appender.append("    private " + item.getPropertyType() + " " + item.getPropertyName() + ";\n\n");
+        });
+        appender.append("}");
+
+        code.append("\n").append(appender);
+        ClassInfo classInfo = ClassInfo.builder()
+                .fileName(classBaseName + "BO.java")
+                .code(code.toString())
+                .build();
+        return classInfo;
+
+    }
 }
