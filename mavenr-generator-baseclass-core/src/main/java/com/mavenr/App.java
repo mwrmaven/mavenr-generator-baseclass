@@ -93,6 +93,9 @@ public class App {
         // 类所在的包基础路径（即entity、vo、server之前的包路径）
         String packagePath = properties.getProperty("database.packagePath");
 
+        // 数据库版本
+        String version = properties.getProperty("database.version");
+
         if (StringUtils.isEmpty(outPath)) {
             outPath = "." + File.separator;
         } else {
@@ -102,7 +105,7 @@ public class App {
         }
 
         // 获取数据库连接
-        Connection connection = ConnectionUtil.getConnection(type, address, port, dbName, username, password);
+        Connection connection = ConnectionUtil.getConnection(type, address, port, dbName, username, password, version);
         List<Table> tableList = new ArrayList<>();
         DatabaseAbstract databaseInterface = DatabaseProxy.getDatabaseService(type);
         if ("true".equalsIgnoreCase(scanAllTables)) {
