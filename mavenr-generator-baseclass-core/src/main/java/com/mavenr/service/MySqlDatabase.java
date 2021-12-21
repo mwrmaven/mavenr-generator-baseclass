@@ -14,55 +14,67 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * @author mavenr
- * @Classname OracleDatabase
- * @Description Oracle数据库的数据表信息获取
- * @Date 2021/12/21 16:45
+ * @Classname MySqlDatabase
+ * @Description Mysql数据库的数据表信息获取
+ * @Date 2021/12/20 17:19
  */
-public class OracleDatabase extends DatabaseBasic{
+public class MySqlDatabase extends DatabaseBasic{
+
+    /**
+     * 获取表信息
+     * @return
+     */
     @Override
-    public List<Table> columns(Properties properties) throws Exception {
+    public List<Table> columns(Properties properties) throws SQLException {
         // 数据库表名，多个表名使用英文逗号分隔（若database.scanAllTables=true，则该条不生效）
         String tableNames = properties.getProperty("database.tableNames");
         // 是否扫描数据库中所有的表
         String scanAllTables = properties.getProperty("database.scanAllTables");
 
         Statement statement = connection.createStatement();
-        // 表信息集合
-        List<Table> tableList = new ArrayList<>();
+        // 表名集合
+        List<String> names = new ArrayList<>();
         if ("TRUE".equalsIgnoreCase(scanAllTables)) {
-            String showTablesSql = "select * from USER_TAB_COMMENTS where TABLE_TYPE = 'TABLE'";
+            String showTablesSql = "show tables";
             ResultSet resultSet = statement.executeQuery(showTablesSql);
             while (resultSet.next()) {
-                Table table = Table.builder()
-                        .tableName(resultSet.getString("TABLE_NAME"))
-                        .tableNameCn(resultSet.getString("COMMENTS"))
-                        .build();
-                tableList.add(table);
+                names.add(resultSet.getString(1));
             }
         } else {
             // 获取配置文件中的表名（英文逗号分隔）
             String[] split = tableNames.split(",");
             for (String t : split) {
-                Table table = Table.builder()
-                        .tableName(t)
-                        .build();
-                tableList.add(table);
+                names.add(t);
             }
         }
-        System.out.println("查询的表名为："
-                + Arrays.toString(tableList.stream().map(Table::getTableName).collect(Collectors.toList()).toArray()));
-        tableList.forEach(item -> {
-            List<Column> columns = null;
+
+        System.out.println("查询的表名为：" + Arrays.toString(names.toArray()));
+
+        // 遍历表名，获取表信息
+        List<Table> tableList = new ArrayList<>();
+        names.forEach(item -> {
             try {
-                columns = allColumns(connection, item.getTableName());
-            } catch (SQLException e) {
-                e.printStackTrace();
+                ResultSet resultSet1 = statement.executeQuery("show create table " + item);
+                while (resultSet1.next()) {
+                    List<Column> columns = allColumns(connection, item);
+                    Table table = Table.builder()
+                            .tableName(item)
+                            .columns(columns)
+                            .build();
+                    String createSql = resultSet1.getString(2);
+                    int index = createSql.indexOf("COMMENT=");
+                    if (index != -1) {
+                        String tableNameCn = createSql.substring(index + 9).replaceAll("'", "");
+                        table.setTableNameCn(tableNameCn);
+                    }
+                    tableList.add(table);
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
-            item.setColumns(columns);
         });
 
         // 关闭连接
@@ -72,56 +84,42 @@ public class OracleDatabase extends DatabaseBasic{
     }
 
     private List<Column> allColumns(Connection connection, String tableName) throws SQLException {
-        // 获取oracle表的主键
-        String showColumns = "select a.COLUMN_NAME, a.DATA_TYPE, u.COMMENTS from user_col_comments u " +
-                "left join all_tab_columns a on u.TABLE_NAME = a.TABLE_NAME and a.COLUMN_NAME = u.COLUMN_NAME " +
-                "where u.TABLE_NAME = '" + tableName + "'";
+        String showColumns = "show full columns from " + tableName;
         List<Column> columnList = new ArrayList<>();
         Statement statement = connection.createStatement();
         try {
             ResultSet resultSet = statement.executeQuery(showColumns);
             while (resultSet.next()) {
-                String columnType = resultSet.getString("DATA_TYPE");
+                String columnType = resultSet.getString("Type");
                 if (columnType.contains("(")) {
                     columnType = columnType.substring(0, columnType.indexOf("("));
                 }
+
                 ColumnEnum columnEnum = ColumnEnum.getColumnType(columnType);
                 String propertyType = columnType;
                 if (columnEnum != null) {
                     propertyType = columnEnum.getPropertyType();
                 }
-
-                String columnName = resultSet.getString("COLUMN_NAME");
+                boolean key = false;
+                if ("PRI".equals(resultSet.getString("Key"))) {
+                    key = true;
+                }
+                String columnName = resultSet.getString("Field");
+                String columnNameCn = resultSet.getString("Comment");
+                if (StringUtils.isEmpty(columnNameCn)) {
+                    columnNameCn = columnName;
+                }
                 Column column = Column.builder()
                         .columnName(columnName)
-                        .columnNameCn(resultSet.getString("COMMENTS"))
+                        .columnNameCn(columnNameCn)
                         .columnType(columnType)
                         .propertyName(TransferUtil.toPropertyName(columnName))
                         .propertyType(propertyType)
+                        .primaryKey(key)
                         .build();
                 columnList.add(column);
             }
-
-            // 获取表主键
-            String showPkOfTable = "select COLUMN_NAME from user_cons_columns cu, user_constraints au " +
-                    "where cu.CONSTRAINT_NAME = au.CONSTRAINT_NAME " +
-                    "and au.CONSTRAINT_TYPE = 'P' and au.TABLE_NAME = '" + tableName + "'";
-            List<String> columnNames = new ArrayList<>();
-            ResultSet resultSet1 = statement.executeQuery(showPkOfTable);
-            while (resultSet1.next()) {
-                columnNames.add(resultSet1.getString("COLUMN_NAME"));
-            }
             statement.close();
-
-            // 遍历column，设置key，以及设置字段中文名
-            columnList.forEach(item -> {
-                if (columnNames.contains(item.getColumnName())) {
-                    item.setPrimaryKey(true);
-                }
-                if (StringUtils.isEmpty(item.getColumnNameCn())) {
-                    item.setColumnNameCn(item.getColumnName());
-                }
-            });
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

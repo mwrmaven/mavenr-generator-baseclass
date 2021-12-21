@@ -32,15 +32,13 @@ public class ClassGenerator {
         StringBuilder appender = new StringBuilder();
 
         if (lombok) {
-            code.append("import lombok.AllArgsConstructor;\n" +
-                    "import lombok.Builder;\n" +
-                    "import lombok.Data;\n" +
-                    "import lombok.NoArgsConstructor;\n");
+            code.append("import lombok.*;\n");
 
             appender.append("@Data\n" +
                     "@Builder\n" +
                     "@NoArgsConstructor\n" +
-                    "@AllArgsConstructor\n");
+                    "@AllArgsConstructor\n" +
+                    "@ToString\n");
         }
 
         code.append("import javax.persistence.Column;\n" +

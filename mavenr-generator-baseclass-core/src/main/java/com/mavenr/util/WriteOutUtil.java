@@ -10,6 +10,7 @@ import com.mavenr.service.OutputInterface;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author mavenr
@@ -19,19 +20,35 @@ import java.util.List;
  */
 @Slf4j
 public class WriteOutUtil {
-
     /**
      * 遍历输出类信息和类代码
-     *
-     * @param tableBO
-     * @param outputInterface
-     * @param outPath
+     * @param tableList 表集合
+     * @param outputInterface 输出接口
+     * @param properties 参数信息
      */
-    public static void write(String type, TableBO tableBO, OutputInterface outputInterface, String outPath,
-                             boolean lombok, boolean swagger) {
+    public static void write(List<Table> tableList, OutputInterface outputInterface, Properties properties) {
         ClassGenerator classGenerator = new ClassGenerator();
-        String packagePath = tableBO.getPackagePath();
-        List<Table> tableList = tableBO.getTableList();
+        // 包路径
+        String packagePath = properties.getProperty("database.packagePath");
+        // 文件输出路径
+        String outPath = properties.getProperty("database.outPath");
+        // 是否添加lombok
+        boolean lombok = "TRUE".equalsIgnoreCase(properties.getProperty("useLombok"));
+        // 是否添加swagger
+        boolean swagger = "TRUE".equalsIgnoreCase(properties.getProperty("useSwagger"));
+        String typeTemp = "";
+        // 数据库驱动
+        String driverClassName = properties.getProperty("database.driverClassName");
+        if (driverClassName.toUpperCase().contains(DatabaseTypeEnum.ORACLE.getType())) {
+            typeTemp = DatabaseTypeEnum.ORACLE.getType();
+        } else if (driverClassName.toUpperCase().contains(DatabaseTypeEnum.MYSQL.getType())) {
+            typeTemp = DatabaseTypeEnum.MYSQL.getType();
+        } else {
+            return;
+        }
+
+        // 数据库类型
+        String type = typeTemp;
         tableList.forEach(item -> {
             log.debug(item.toString());
             String tableName = item.getTableName();

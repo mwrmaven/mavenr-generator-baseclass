@@ -1,9 +1,9 @@
-package com.mavenr.servicenew;
+package com.mavenr.service;
 
 import com.mavenr.entity.Table;
 
-import java.io.FileInputStream;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author mavenr
@@ -13,9 +13,13 @@ import java.util.List;
  */
 public class FileDataInfo implements DataInfoInterface{
 
+    @Override
+    public void init(Properties properties) {
+
+    }
 
     @Override
-    public List<Table> columns(List<String> tableNames) {
+    public List<Table> columns(Properties properties) throws Exception {
         return null;
     }
 }

@@ -16,13 +16,19 @@ import java.nio.charset.Charset;
 public class OutToFile implements OutputInterface {
     @Override
     public void push(String data, String fileName, String path) throws IOException {
-
+        // 如果没有输出路径，默认为当前路径
+        if (StringUtils.isEmpty(path)) {
+            path = "." + File.separator;
+        }
         File file = new File(path);
         if (!file.exists() || file.isFile()) {
             file.mkdirs();
         }
 
         // 文件的路径
+        if (!path.endsWith(File.separator)) {
+            path = path + File.separator;
+        }
         String filePath = path + fileName;
 
         FileOutputStream fileOutputStream = new FileOutputStream(new File(filePath));

@@ -3,6 +3,7 @@ package com.mavenr.util;
 
 import com.mavenr.enums.DatabaseTypeEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,11 +17,9 @@ import java.sql.SQLException;
  */
 @Slf4j
 public class ConnectionUtil {
-
     /**
-     * 根据数据库信息创建连接
-     *
-     * @param type
+     * 获取数据库连接
+     * @param driverClassName
      * @param address
      * @param port
      * @param dbName
@@ -28,61 +27,55 @@ public class ConnectionUtil {
      * @param password
      * @return
      */
-    public static Connection getConnection(String type, String address, String port, String dbName, String username, String password, String version) {
-        String driver = "";
+    public static Connection getConnectionNew(String driverClassName, String address, String port, String dbName,
+                                              String username, String password) {
+        // 数据库连接url
         String url = "";
-        if (DatabaseTypeEnum.ORACLE.getType().equalsIgnoreCase(type)) {
-            driver = "oracle.jdbc.OracleDriver";
+        String type = "";
+        // 判断数据库类型
+        if (driverClassName.toUpperCase().contains(DatabaseTypeEnum.ORACLE.getType())) {
+            type = DatabaseTypeEnum.ORACLE.getType();
+            // Oracle
             url = "jdbc:oracle:thin:@" + address + ":" + port + ":" + dbName;
-            int versionFlag = 11;
-            String versionStr = version;
-            if (versionStr.trim().length() >= 2) {
-                versionStr = versionStr.trim().substring(0, 2);
-            }
-            try {
-                if (Integer.valueOf(versionStr) > versionFlag) {
-                    url = "jdbc:oracle:thin:@" + address + ":" + port + "/" + dbName;
-                }
-            } catch (Exception e) {
-                log.error("Oracle数据库版本输入错误！");
-            }
-
-        } else if (DatabaseTypeEnum.MYSQL.getType().equalsIgnoreCase(type)) {
-            driver = "com.mysql.jdbc.Driver";
-            url = "jdbc:mysql://" + address + ":" + port + "/" + dbName + "?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&useSSL=FALSE";
-            int versionFlag = 5;
-            String[] versions = version.trim().split("\\.");
-            try {
-                if (Integer.valueOf(versions[0]) > versionFlag) {
-                    driver = "com.mysql.cj.jdbc.Driver";
-                }
-            } catch (Exception e) {
-                log.error("Mysql数据库版本输入错误！");
-            }
+        } else if (driverClassName.toUpperCase().contains(DatabaseTypeEnum.MYSQL.getType())) {
+            type = DatabaseTypeEnum.MYSQL.getType();
+            // Mysql
+            url = "jdbc:mysql://" + address + ":" + port + "/" + dbName + "?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&useSSL=FALSE";
         }
 
+        // 判断url地址
+        if (StringUtils.isBlank(url)) {
+            return null;
+        }
+
+        Connection connection = null;
         try {
-            Class.forName(driver);
-            Connection connection = DriverManager.getConnection(url, username, password);
-            return connection;
+            Class.forName(driverClassName);
+            connection = DriverManager.getConnection(url, username, password);
         } catch (Exception e) {
-            e.printStackTrace();
+            if (DatabaseTypeEnum.ORACLE.getType().equals(type)) {
+                url = "jdbc:oracle:thin:@" + address + ":" + port + "/" + dbName;
+                try {
+                    connection = DriverManager.getConnection(url, username, password);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                e.printStackTrace();
+            }
         }
-        return null;
+        return connection;
     }
 
     /**
-     * 关闭连接
-     *
+     * 关闭数据库连接
      * @param connection
      */
-    public static void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+    public static void close(Connection connection) {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

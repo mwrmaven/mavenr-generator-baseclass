@@ -12,9 +12,18 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum DatabaseTypeEnum{
+    // oracle数据库
     ORACLE("ORACLE", 1),
+    // mysql数据库
     MYSQL("MYSQL", 2);
+
+    /**
+     * 数据库的类型
+     */
     private String type;
+    /**
+     * 类型对应的值
+     */
     private Integer code;
 
     public static DatabaseTypeEnum getType(String type) {

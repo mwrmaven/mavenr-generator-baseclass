@@ -13,12 +13,19 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ColumnEnum{
+    // 数据库中的VARCHAR类型
     VARCHAR("VARCHAR", "String", "java.lang.String"),
+    // 数据库中的INTEGER类型
     INTEGER("INTEGER", "Integer", "java.lang.Integer"),
+    // 数据库中的INT类型
     INT("INT", "Integer", "java.lang.Integer"),
+    // 数据库中的DATE类型
     DATE("DATE", "Date", "java.util.Date"),
+    // 数据库中的TIMESTAMP类型
     TIMESTAMP("TIMESTAMP", "Date", "java.util.Date"),
+    // 数据库中的VARCHAR2类型
     VARCHAR2("VARCHAR2", "String", "java.lang.String"),
+    // 数据库中的NUMBER类型
     NUMBER("NUMBER", "Integer", "java.lang.Integer");
 
     /**
