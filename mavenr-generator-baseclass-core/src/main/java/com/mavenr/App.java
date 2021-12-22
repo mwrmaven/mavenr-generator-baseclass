@@ -56,6 +56,8 @@ public class App {
             System.out.println(defaultFilePath + " 文件不存在！");
             return;
         }
+        properties.setProperty("useLombok", String.valueOf(lombok));
+        properties.setProperty("useSwagger", String.valueOf(swagger));
 
         DatabaseBasic databaseBasic;
         // 数据库驱动

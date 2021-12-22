@@ -1,6 +1,9 @@
 package com.mavenr.generator;
 
 import com.mavenr.entity.ClassInfo;
+import com.mavenr.entity.Column;
+
+import java.util.List;
 
 /**
  * @author mavenr
@@ -10,5 +13,16 @@ import com.mavenr.entity.ClassInfo;
  */
 public interface ClassGeneratorInterface {
 
-    ClassInfo create();
+    /**
+     * 创建表对应的类的信息
+     * @param packagePath 包路径
+     * @param tableName 表名
+     * @param tableNameCn 表中文名
+     * @param columns 表字段信息
+     * @param lombok 是否添加lombok注解
+     * @param swagger 是否添加swagger注解
+     * @return
+     */
+    ClassInfo create(String packagePath, String tableName, String tableNameCn,
+                     List<Column> columns, boolean lombok, boolean swagger);
 }

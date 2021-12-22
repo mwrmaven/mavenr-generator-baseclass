@@ -1,11 +1,10 @@
 package com.mavenr.util;
 
-import com.mavenr.bo.TableBO;
 import com.mavenr.entity.ClassInfo;
 import com.mavenr.entity.Column;
 import com.mavenr.entity.Table;
 import com.mavenr.enums.DatabaseTypeEnum;
-import com.mavenr.generator.ClassGenerator;
+import com.mavenr.generator.impl.*;
 import com.mavenr.service.OutputInterface;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +26,6 @@ public class WriteOutUtil {
      * @param properties 参数信息
      */
     public static void write(List<Table> tableList, OutputInterface outputInterface, Properties properties) {
-        ClassGenerator classGenerator = new ClassGenerator();
         // 包路径
         String packagePath = properties.getProperty("database.packagePath");
         // 文件输出路径
@@ -59,39 +57,35 @@ public class WriteOutUtil {
                 log.error(tableName + "表中字段为空");
             } else {
                 try {
-                    ClassInfo entity = classGenerator.createEntity(packagePath, tableName, tableNameCn, columns, lombok, swagger);
+                    ClassInfo entity = new EntityGenerator().create(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     outputInterface.push(entity.getCode(), entity.getFileName(), outPath);
 
-                    ClassInfo vo = classGenerator.createVO(packagePath, tableName, tableNameCn, columns, lombok, swagger);
+                    ClassInfo vo = new VOGenerator().create(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     outputInterface.push(vo.getCode(), vo.getFileName(), outPath);
 
-                    ClassInfo mapper = classGenerator.createMapper(packagePath, tableName);
+                    ClassInfo mapper = new MapperGenerator().create(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     outputInterface.push(mapper.getCode(), mapper.getFileName(), outPath);
 
                     ClassInfo mapperXml = null;
                     if (DatabaseTypeEnum.ORACLE.getType().equalsIgnoreCase(type)) {
-                        mapperXml = classGenerator.createOracleMapperXml(packagePath, tableName, columns);
+                        mapperXml = new OracleMapperXmlGenerator().create(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     } else if (DatabaseTypeEnum.MYSQL.getType().equalsIgnoreCase(type)) {
-                        mapperXml = classGenerator.createMysqlMapperXml(packagePath, tableName, columns);
+                        mapperXml = new MysqlMapperXmlGenerator().create(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     }
-
                     outputInterface.push(mapperXml.getCode(), mapperXml.getFileName(), outPath);
 
-                    ClassInfo service = classGenerator.createService(packagePath, tableName);
+                    ClassInfo service = new ServiceGenerator().create(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     outputInterface.push(service.getCode(), service.getFileName(), outPath);
 
-                    ClassInfo serviceImpl = classGenerator.createServiceImpl(packagePath, tableName, columns);
+                    ClassInfo serviceImpl = new ServiceImplGenerator().create(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     outputInterface.push(serviceImpl.getCode(), serviceImpl.getFileName(), outPath);
 
-                    ClassInfo importBo = classGenerator.createImportBo(packagePath, tableName, columns);
+                    ClassInfo importBo = new ImportBOGenerator().create(packagePath, tableName, tableNameCn, columns, lombok, swagger);
                     outputInterface.push(importBo.getCode(), importBo.getFileName(), outPath);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
-
-
-
     }
 }
