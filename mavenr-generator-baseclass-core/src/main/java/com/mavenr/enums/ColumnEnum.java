@@ -26,7 +26,11 @@ public enum ColumnEnum{
     // 数据库中的VARCHAR2类型
     VARCHAR2("VARCHAR2", "String", "java.lang.String"),
     // 数据库中的NUMBER类型
-    NUMBER("NUMBER", "Integer", "java.lang.Integer");
+    NUMBER("NUMBER", "Integer", "java.lang.Integer"),
+    // 数据库中的tinyint类型
+    TINYINT("TINYINT", "Integer", "java.lang.Integer"),
+    // 数据库中的datetime类型
+    DATETIME("DATETIME", "Date", "java.util.Date");
 
     /**
      * 数据库字段类型
