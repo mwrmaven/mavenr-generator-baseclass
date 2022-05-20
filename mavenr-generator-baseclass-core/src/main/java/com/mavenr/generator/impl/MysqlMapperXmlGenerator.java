@@ -2,6 +2,7 @@ package com.mavenr.generator.impl;
 
 import com.mavenr.entity.ClassInfo;
 import com.mavenr.entity.Column;
+import com.mavenr.enums.JdbcTypeEnum;
 import com.mavenr.generator.ClassGeneratorInterface;
 import com.mavenr.util.TransferUtil;
 
@@ -45,7 +46,11 @@ public class MysqlMapperXmlGenerator implements ClassGeneratorInterface {
         code.append("        </trim>\n");
         code.append("        <trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">\n");
         columns.forEach(item -> {
-            String type = item.getColumnType();
+            String type = item.getColumnType().toUpperCase();
+            JdbcTypeEnum byColumnType = JdbcTypeEnum.getByColumnType(type);
+            if (byColumnType != null) {
+                type = byColumnType.getJdbcType();
+            }
             if (type.equals("VARCHAR2")) {
                 type = "VARCHAR";
             }
@@ -64,7 +69,11 @@ public class MysqlMapperXmlGenerator implements ClassGeneratorInterface {
         code.append("            (\n");
         Stream.iterate(0, i -> i + 1).limit(columns.size()).forEach(index -> {
             Column column = columns.get(index);
-            String type = column.getColumnType();
+            String type = column.getColumnType().toUpperCase();
+            JdbcTypeEnum byColumnType = JdbcTypeEnum.getByColumnType(type);
+            if (byColumnType != null) {
+                type = byColumnType.getJdbcType();
+            }
             if (type.equals("VARCHAR2")) {
                 type = "VARCHAR";
             }
@@ -84,7 +93,11 @@ public class MysqlMapperXmlGenerator implements ClassGeneratorInterface {
         code.append("        select <include refid=\"All_Columns\"/> from " + tableName + " \n");
         code.append("        <where>\n");
         columns.forEach(item -> {
-            String type = item.getColumnType();
+            String type = item.getColumnType().toUpperCase();
+            JdbcTypeEnum byColumnType = JdbcTypeEnum.getByColumnType(type);
+            if (byColumnType != null) {
+                type = byColumnType.getJdbcType();
+            }
             if (type.equals("VARCHAR2")) {
                 type = "VARCHAR";
             }
@@ -99,7 +112,11 @@ public class MysqlMapperXmlGenerator implements ClassGeneratorInterface {
         code.append("        update " + tableName + " \n");
         code.append("        <set>\n");
         columns.forEach(item -> {
-            String type = item.getColumnType();
+            String type = item.getColumnType().toUpperCase();
+            JdbcTypeEnum byColumnType = JdbcTypeEnum.getByColumnType(type);
+            if (byColumnType != null) {
+                type = byColumnType.getJdbcType();
+            }
             if (type.equals("VARCHAR2")) {
                 type = "VARCHAR";
             }
@@ -110,14 +127,22 @@ public class MysqlMapperXmlGenerator implements ClassGeneratorInterface {
         // 判断是否存在主键，如果是，则使用主键，否则使用第一个字段
         if (first.isPresent()) {
             Column column = first.get();
-            String type = column.getColumnType();
+            String type = column.getColumnType().toUpperCase();
+            JdbcTypeEnum byColumnType = JdbcTypeEnum.getByColumnType(type);
+            if (byColumnType != null) {
+                type = byColumnType.getJdbcType();
+            }
             if (type.equals("VARCHAR2")) {
                 type = "VARCHAR";
             }
             code.append("        where " + column.getColumnName() + " = #{" + column.getPropertyName() + ", jdbcType=" + type + "}\n");
         } else {
             Column column = columns.get(0);
-            String type = column.getColumnType();
+            String type = column.getColumnType().toUpperCase();
+            JdbcTypeEnum byColumnType = JdbcTypeEnum.getByColumnType(type);
+            if (byColumnType != null) {
+                type = byColumnType.getJdbcType();
+            }
             if (type.equals("VARCHAR2")) {
                 type = "VARCHAR";
             }
