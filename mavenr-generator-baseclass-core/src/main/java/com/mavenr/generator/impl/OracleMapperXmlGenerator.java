@@ -64,7 +64,7 @@ public class OracleMapperXmlGenerator implements ClassGeneratorInterface {
         // 配置批量插入数据
         code.append("    <!-- 通用——批量插入数据 -->\n");
         code.append("    <insert id=\"insertList\" parameterType=\"java.util.List\">\n");
-        code.append("        INSERT INTO <include refid=\"TableName\"/> (<include refid=\"All_Columns\">) \n");
+        code.append("        INSERT INTO <include refid=\"TableName\"/> (<include refid=\"All_Columns\"/>) \n");
         code.append("        SELECT a.* FROM (\n");
         code.append("        <foreach collection=\"list\" item=\"item\" index=\"index\" separator=\"union all\">\n");
         code.append("            SELECT \n");
