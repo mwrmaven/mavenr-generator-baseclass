@@ -44,7 +44,7 @@ public class MysqlMapperXmlGenerator implements ClassGeneratorInterface {
             code.append("            </if>\n");
         });
         code.append("        </trim>\n");
-        code.append("        <trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">\n");
+        code.append("        <trim prefix=\"values (\" suffix=\")\" suffixOverrides=\",\">\n");
         columns.forEach(item -> {
             String type = item.getColumnType().toUpperCase();
             JdbcTypeEnum byColumnType = JdbcTypeEnum.getByColumnType(type);
