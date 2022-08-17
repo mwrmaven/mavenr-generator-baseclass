@@ -1,0 +1,31 @@
+// 文件中的${}参数会被替换，属性（Object variable）会根据表字段循环生成；其中 className为类名，createTime为创建时间，tableName为表名， columnComments为字段注释， columnName为字段名
+package com.mavenr;
+
+import lombok.*;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import java.util.Date;
+import java.lang.String;
+import java.lang.Integer;
+
+/**
+ * @author
+ * @Classname ${className}
+ * @Description TODO
+ * @Date ${createTime}
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@Table(name = "${tableName}")
+public class Entity {
+
+    /**
+     * ${columnComments}
+     */
+    @Column(name = "${columnName}")
+    private Object variable;
+
+}
