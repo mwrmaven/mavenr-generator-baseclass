@@ -3,7 +3,6 @@ package com.mavenr.service;
 import com.mavenr.util.ConnectionUtil;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Properties;
 
 /**

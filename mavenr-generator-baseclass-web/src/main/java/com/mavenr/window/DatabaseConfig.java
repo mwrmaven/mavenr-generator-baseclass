@@ -1,8 +1,16 @@
 package com.mavenr.window;
 
+import com.mavenr.entity.BaseConfig;
+import com.mavenr.entity.Table;
+import com.mavenr.enums.DatabaseTypeEnum;
+import com.mavenr.service.DatabaseBasic;
+import com.mavenr.service.MySqlDatabase;
+import com.mavenr.service.OracleDatabase;
+import com.mavenr.service.OutToFile;
 import com.mavenr.systemenum.DatabaseType;
 import com.mavenr.util.BatchButton;
 import com.mavenr.util.NodeCreateUtil;
+import com.mavenr.util.WriteOutUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,6 +21,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
  * @author mavenr
@@ -49,6 +60,7 @@ public class DatabaseConfig {
         HBox databaseName = nodeCreateUtil.createLabelAndTextField("请输入数据库名称：");
         HBox databaseUser = nodeCreateUtil.createLabelAndTextField("请输入数据库账号：");
         HBox databasePwd = nodeCreateUtil.createLabelAndTextField("请输入数据库密码：");
+        HBox databaseTableName = nodeCreateUtil.createLabelAndTextField("请输入表名（不写则遍历所有表；多个表名以,分隔）：");
         HBox packageBasePath = nodeCreateUtil.createLabelAndTextField("请输入包的基础路径：");
         HBox entityChooser = nodeCreateUtil.createLabelAndFileChooser("请选择entity类模板文件：", "templete/Entity.java");
         HBox voChooser = nodeCreateUtil.createLabelAndFileChooser("请选择vo类模板文件：", "templete/VO.java");
@@ -72,6 +84,7 @@ public class DatabaseConfig {
                 databaseName,
                 databaseUser,
                 databasePwd,
+                databaseTableName,
                 packageBasePath,
                 entityChooser,
                 voChooser,
@@ -132,18 +145,42 @@ public class DatabaseConfig {
                 String user = getTextFieldValue(children.get(4));
                 // 数据库密码
                 String pwd = getTextFieldValue(children.get(5));
+                // 表名
+                String tableNames = getTextFieldValue(children.get(6));
                 // 包基础路径
-                String packageBasePath = getTextFieldValue(children.get(6));
+                String packageBasePath = getTextFieldValue(children.get(7));
                 // entity模板文件路径
-                String entityPath = getTemplatePath(children.get(7));
+                String entityPath = getTemplatePath(children.get(8));
                 // vo模板文件路径
-                String voPath = getTemplatePath(children.get(8));
+                String voPath = getTemplatePath(children.get(9));
                 // mapper模板文件路径
-                String mapperPath = getTemplatePath(children.get(9));
+                String mapperPath = getTemplatePath(children.get(10));
                 // service模板文件路径
-                String servicePath = getTemplatePath(children.get(10));
+                String servicePath = getTemplatePath(children.get(11));
                 // bo模板文件路径
-                String boPath = getTemplatePath(children.get(11));
+                String boPath = getTemplatePath(children.get(12));
+
+                BaseConfig bc = BaseConfig.builder()
+                        .type(type)
+                        .path(path)
+                        .port(port)
+                        .name(name)
+                        .user(user)
+                        .pwd(pwd)
+                        .tableNames(tableNames)
+                        .packageBasePath(packageBasePath)
+                        .entityPath(entityPath)
+                        .voPath(voPath)
+                        .mapperPath(mapperPath)
+                        .servicePath(servicePath)
+                        .boPath(boPath)
+                        .build();
+
+                // 获取数据库表的字段信息
+                List<Table> tableList = getTableInfos(bc);
+                // 根据tableBOList生成code代码并将代码导出到文件
+                WriteOutUtil.write(tableList, new OutToFile(), bc);
+                System.out.println("程序执行完毕，文件输出路径为：" + properties.getProperty("database.outPath"));
             }
         });
     }
@@ -173,6 +210,31 @@ public class DatabaseConfig {
         } else {
             return null;
         }
+    }
+
+    /**
+     * 获取表信息
+     * @param baseConfig 数据库表基本配置
+     * @return
+     */
+    private List<Table> getTableInfos(BaseConfig baseConfig) {
+        // 数据库类型
+        String type = baseConfig.getType();
+        DatabaseBasic databaseBasic = null;
+        if (DatabaseTypeEnum.ORACLE.getType().equals(type)) {
+            databaseBasic = new OracleDatabase();
+        } else if (DatabaseTypeEnum.MYSQL.getType().equals(type)) {
+            databaseBasic = new MySqlDatabase();
+        }
+        databaseBasic.init(baseConfig);
+        List<Table> result = null;
+        try {
+            result = databaseBasic.columns(baseConfig);
+        } catch (Exception e) {
+            System.out.println("获取表信息失败：" + e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

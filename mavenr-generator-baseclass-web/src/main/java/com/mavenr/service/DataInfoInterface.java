@@ -1,5 +1,6 @@
 package com.mavenr.service;
 
+import com.mavenr.entity.BaseConfig;
 import com.mavenr.entity.Table;
 
 import java.util.List;
@@ -15,14 +16,14 @@ public interface DataInfoInterface {
 
     /**
      * 初始化信息
-     * @param properties
+     * @param baseConfig
      */
-    void init(Properties properties);
+    void init(BaseConfig baseConfig);
 
     /**
      * 表信息获取
-     * @param properties 参数信息
+     * @param baseConfig 参数信息
      * @return
      */
-    List<Table> columns(Properties properties) throws Exception;
+    List<Table> columns(BaseConfig baseConfig) throws Exception;
 }

@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mavenr-generator-baseclass-core</artifactId>
+    <version>1.0</version>
 
     <name>mavenr-generator-baseclass-core</name>
     <!-- FIXME change it to the project's website -->
