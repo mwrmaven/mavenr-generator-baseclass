@@ -1,9 +1,7 @@
 package com.mavenr.generator;
 
 import com.mavenr.entity.ClassInfo;
-import com.mavenr.entity.Column;
-
-import java.util.List;
+import com.mavenr.entity.GeneratorConfig;
 
 /**
  * @author mavenr
@@ -15,12 +13,8 @@ public interface ClassGeneratorInterface {
 
     /**
      * 创建表对应的类的信息
-     * @param packagePath 包路径
-     * @param tableName 表名
-     * @param tableNameCn 表中文名
-     * @param columns 表字段信息
+     * @param generatorConfig 生成类代码的参数
      * @return
      */
-    ClassInfo create(String packagePath, String tableName, String tableNameCn,
-                     List<Column> columns);
+    ClassInfo create(GeneratorConfig generatorConfig);
 }

@@ -15,7 +15,6 @@ import java.sql.SQLException;
  * @Description 数据库连接工具类，生成和关闭Connection连接
  * @Date 2020/10/16 11:30 下午
  */
-@Slf4j
 public class ConnectionUtil {
     /**
      * 获取数据库连接

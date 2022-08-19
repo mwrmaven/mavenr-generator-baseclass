@@ -1,7 +1,5 @@
 package com.mavenr.service;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +16,7 @@ public class OutToFile implements OutputInterface {
     @Override
     public void push(String data, String fileName, String path) throws IOException {
         // 如果没有输出路径，默认为当前路径
-        if (StringUtils.isEmpty(path)) {
+        if (path == null || "".equals(path)) {
             path = "." + File.separator;
         }
         File file = new File(path);

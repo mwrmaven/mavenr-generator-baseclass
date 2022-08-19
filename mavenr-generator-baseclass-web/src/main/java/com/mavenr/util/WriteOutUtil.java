@@ -1,14 +1,14 @@
 package com.mavenr.util;
 
-import com.mavenr.entity.BaseConfig;
-import com.mavenr.entity.ClassInfo;
-import com.mavenr.entity.Column;
-import com.mavenr.entity.Table;
+import com.mavenr.entity.*;
 import com.mavenr.enums.DatabaseTypeEnum;
 import com.mavenr.generator.impl.*;
 import com.mavenr.service.OutputInterface;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 /**
@@ -28,7 +28,7 @@ public class WriteOutUtil {
         // 包路径
         String packagePath = baseConfig.getPackageBasePath();
         // 文件输出路径
-        String outPath = System.getProperty("user.dir") + File.separator + "code";
+        String outPath = baseConfig.getOutPath();
         File file = new File(outPath);
         if (!file.exists() || file.isFile()) {
             // 创建文件夹
@@ -46,32 +46,60 @@ public class WriteOutUtil {
             if (columns == null || columns.size() == 0) {
                 System.out.println(tableName + "表中字段为空");
             } else {
+                GeneratorConfig generatorConfig = GeneratorConfig.builder()
+                        .packagePath(packagePath)
+                        .tableName(tableName)
+                        .tableNameCn(tableNameCn)
+                        .columnList(columns)
+                        .build();
+
                 try {
-                    ClassInfo entity = new EntityGenerator().create(packagePath, tableName, tableNameCn, columns);
-                    outputInterface.push(entity.getCode(), entity.getFileName(), outPath);
-
-                    ClassInfo vo = new VOGenerator().create(packagePath, tableName, tableNameCn, columns);
-                    outputInterface.push(vo.getCode(), vo.getFileName(), outPath);
-
-                    ClassInfo mapper = new MapperGenerator().create(packagePath, tableName, tableNameCn, columns);
-                    outputInterface.push(mapper.getCode(), mapper.getFileName(), outPath);
-
-                    ClassInfo mapperXml = null;
-                    if (DatabaseTypeEnum.ORACLE.getType().equalsIgnoreCase(type)) {
-                        mapperXml = new OracleMapperXmlGenerator().create(packagePath, tableName, tableNameCn, columns);
-                    } else if (DatabaseTypeEnum.MYSQL.getType().equalsIgnoreCase(type)) {
-                        mapperXml = new MysqlMapperXmlGenerator().create(packagePath, tableName, tableNameCn, columns);
+                    String entityPath = baseConfig.getEntityPath();
+                    if (entityPath != null) {
+                        BufferedReader br = null;
+                        if ("".equals(entityPath)) {
+                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Entity.java")));
+                        } else {
+                            br = new BufferedReader(new InputStreamReader(new FileInputStream(entityPath)));
+                        }
+                        generatorConfig.setBr(br);
+                        ClassInfo entity = new EntityGenerator().create(generatorConfig);
+                        outputInterface.push(entity.getCode(), entity.getFileName(), outPath);
                     }
-                    outputInterface.push(mapperXml.getCode(), mapperXml.getFileName(), outPath);
 
-                    ClassInfo service = new ServiceGenerator().create(packagePath, tableName, tableNameCn, columns);
-                    outputInterface.push(service.getCode(), service.getFileName(), outPath);
+                    String voPath = baseConfig.getVoPath();
+                    if (voPath != null) {
+                        BufferedReader br = null;
+                        if ("".equals(voPath)) {
+                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/VO.java")));
+                        } else {
+                            br = new BufferedReader(new InputStreamReader(new FileInputStream(voPath)));
+                        }
+                        generatorConfig.setBr(br);
+                        ClassInfo vo = new VOGenerator().create(generatorConfig);
+                        outputInterface.push(vo.getCode(), vo.getFileName(), outPath);
+                    }
 
-                    ClassInfo serviceImpl = new ServiceImplGenerator().create(packagePath, tableName, tableNameCn, columns);
-                    outputInterface.push(serviceImpl.getCode(), serviceImpl.getFileName(), outPath);
 
-                    ClassInfo importBo = new ImportBOGenerator().create(packagePath, tableName, tableNameCn, columns);
-                    outputInterface.push(importBo.getCode(), importBo.getFileName(), outPath);
+//                    ClassInfo mapper = new MapperGenerator().create(generatorConfig);
+//                    outputInterface.push(mapper.getCode(), mapper.getFileName(), outPath);
+//
+//                    ClassInfo mapperXml = null;
+//                    if (DatabaseTypeEnum.ORACLE.getType().equalsIgnoreCase(type)) {
+//                        mapperXml = new OracleMapperXmlGenerator().create(generatorConfig);
+//                    } else if (DatabaseTypeEnum.MYSQL.getType().equalsIgnoreCase(type)) {
+//                        mapperXml = new MysqlMapperXmlGenerator().create(generatorConfig);
+//                    }
+//                    outputInterface.push(mapperXml.getCode(), mapperXml.getFileName(), outPath);
+//
+//                    ClassInfo service = new ServiceGenerator().create(generatorConfig);
+//                    outputInterface.push(service.getCode(), service.getFileName(), outPath);
+//
+//                    ClassInfo serviceImpl = new ServiceImplGenerator().create(generatorConfig);
+//                    outputInterface.push(serviceImpl.getCode(), serviceImpl.getFileName(), outPath);
+//
+//                    ClassInfo importBo = new ImportBOGenerator().create(generatorConfig);
+//                    outputInterface.push(importBo.getCode(), importBo.getFileName(), outPath);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

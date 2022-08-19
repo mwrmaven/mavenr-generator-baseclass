@@ -29,4 +29,5 @@ public class BaseConfig {
     String mapperPath;
     String servicePath;
     String boPath;
+    String outPath;
 }

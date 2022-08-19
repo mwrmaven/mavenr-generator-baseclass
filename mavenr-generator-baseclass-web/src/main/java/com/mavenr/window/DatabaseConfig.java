@@ -21,8 +21,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -160,6 +160,7 @@ public class DatabaseConfig {
                 // bo模板文件路径
                 String boPath = getTemplatePath(children.get(12));
 
+                String outPath = System.getProperty("user.dir") + File.separator + "code";
                 BaseConfig bc = BaseConfig.builder()
                         .type(type)
                         .path(path)
@@ -174,13 +175,14 @@ public class DatabaseConfig {
                         .mapperPath(mapperPath)
                         .servicePath(servicePath)
                         .boPath(boPath)
+                        .outPath(outPath)
                         .build();
 
                 // 获取数据库表的字段信息
                 List<Table> tableList = getTableInfos(bc);
                 // 根据tableBOList生成code代码并将代码导出到文件
                 WriteOutUtil.write(tableList, new OutToFile(), bc);
-                System.out.println("程序执行完毕，文件输出路径为：" + properties.getProperty("database.outPath"));
+                System.out.println("程序执行完毕，文件输出路径为：" + outPath);
             }
         });
     }

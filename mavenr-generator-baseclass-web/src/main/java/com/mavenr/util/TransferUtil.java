@@ -1,5 +1,13 @@
 package com.mavenr.util;
 
+import com.mavenr.entity.Column;
+import com.mavenr.entity.GeneratorConfig;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author mavenr
  * @Classname TransferUtil
@@ -7,6 +15,13 @@ package com.mavenr.util;
  * @Date 2020/10/16 11:37 下午
  */
 public class TransferUtil {
+
+    /**
+     * 匹配代码行中的参数的正则表达式
+     */
+    private static final Pattern pattern = Pattern.compile("\\$\\{\\w*\\}");
+
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 将表名转换为基础类名
@@ -43,5 +58,46 @@ public class TransferUtil {
             }
         }
         return propertyName;
+    }
+
+    /**
+     * 替换行中的参数
+     * @param classType
+     * @param line
+     * @param generatorConfig
+     * @param column
+     * @return
+     */
+    public static String replaceParamToValue(String classType, String line, GeneratorConfig generatorConfig, Column column) {
+        String result = line;
+        Matcher matcher = pattern.matcher(result);
+        while (matcher.find()) {
+            String param = matcher.group();
+            switch (param) {
+                case "${packagePath}":
+                    result = result.replace("${packagePath}", generatorConfig.getPackagePath());
+                    break;
+                case "${tableName}":
+                    result = result.replace("${tableName}", generatorConfig.getTableName());
+                    break;
+                case "${className}":
+                    result = result.replace("${className}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + classType);
+                    break;
+                case "${columnComments}":
+                    result = result.replace("${columnComments}", column.getColumnNameCn());
+                    break;
+                case "${columnName}":
+                    result = result.replace("${columnName}", column.getColumnName());
+                    break;
+                case "${columnType}":
+                    result = result.replace("${columnType}", column.getColumnType());
+                    break;
+                case "${createTime}":
+                    result = result.replace("${createTime}", sdf.format(new Date()));
+                    break;
+                default:
+            }
+        }
+        return result;
     }
 }
