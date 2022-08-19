@@ -1,5 +1,6 @@
 package com.mavenr.window;
 
+import com.mavenr.config.Config;
 import com.mavenr.entity.BaseConfig;
 import com.mavenr.entity.Table;
 import com.mavenr.enums.DatabaseTypeEnum;
@@ -11,6 +12,8 @@ import com.mavenr.systemenum.DatabaseType;
 import com.mavenr.util.BatchButton;
 import com.mavenr.util.NodeCreateUtil;
 import com.mavenr.util.WriteOutUtil;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -54,19 +57,39 @@ public class DatabaseConfig {
         root.setSpacing(10);
         ap.getChildren().add(root);
 
-        HBox databaseType = databaseType();
-        HBox databasePath = nodeCreateUtil.createLabelAndTextField("请输入数据库地址：");
-        HBox databasePort = nodeCreateUtil.createLabelAndTextField("请输入端口号：");
-        HBox databaseName = nodeCreateUtil.createLabelAndTextField("请输入数据库名称：");
-        HBox databaseUser = nodeCreateUtil.createLabelAndTextField("请输入数据库账号：");
-        HBox databasePwd = nodeCreateUtil.createLabelAndTextField("请输入数据库密码：");
-        HBox databaseTableName = nodeCreateUtil.createLabelAndTextField("请输入表名（不写则遍历所有表；多个表名以,分隔）：");
-        HBox packageBasePath = nodeCreateUtil.createLabelAndTextField("请输入包的基础路径：");
-        HBox entityChooser = nodeCreateUtil.createLabelAndFileChooser("请选择entity类模板文件：", "templete/Entity.java");
-        HBox voChooser = nodeCreateUtil.createLabelAndFileChooser("请选择vo类模板文件：", "templete/VO.java");
-        HBox mapperChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapper类模板文件：", "templete/Mapper.java");
-        HBox serviceChooser = nodeCreateUtil.createLabelAndFileChooser("请选择service类模板文件：", "templete/Service.java");
-        HBox boChooser = nodeCreateUtil.createLabelAndFileChooser("请选择bo类模板文件：", "templete/BO.java");
+        // 获取配置文件中的参数
+        String paramType = Config.get("databaseType");
+        String paramPath = Config.get("databasePath");
+        String paramPort = Config.get("databasePort");
+        String paramName = Config.get("databaseName");
+        String paramUser = Config.get("databaseUser");
+        String paramPwd = Config.get("databasePwd");
+        String paramTableName = Config.get("databaseTableName");
+        String paramPackageBasePath = Config.get("packageBasePath");
+        String paramEntity = Config.get("entityChooser");
+        String paramVo = Config.get("voChooser");
+        String paramMapper = Config.get("mapperChooser");
+        String paramService = Config.get("serviceChooser");
+        String paramBo = Config.get("boChooser");
+        String booleanEntity = Config.get("isEntity");
+        String booleanVo = Config.get("isVo");
+        String booleanMapper = Config.get("isMapper");
+        String booleanService = Config.get("isService");
+        String booleanBo = Config.get("isBo");
+
+        HBox databaseType = databaseType(paramType);
+        HBox databasePath = nodeCreateUtil.createLabelAndTextField("请输入数据库地址：", paramPath, "databasePath");
+        HBox databasePort = nodeCreateUtil.createLabelAndTextField("请输入端口号：", paramPort, "databasePort");
+        HBox databaseName = nodeCreateUtil.createLabelAndTextField("请输入数据库名称：", paramName, "databaseName");
+        HBox databaseUser = nodeCreateUtil.createLabelAndTextField("请输入数据库账号：", paramUser, "databaseUser");
+        HBox databasePwd = nodeCreateUtil.createLabelAndTextField("请输入数据库密码：", paramPwd, "databasePwd");
+        HBox databaseTableName = nodeCreateUtil.createLabelAndTextField("请输入表名（不写则遍历所有表；多个表名以,分隔）：", paramTableName, "databaseTableName");
+        HBox packageBasePath = nodeCreateUtil.createLabelAndTextField("请输入包的基础路径：", paramPackageBasePath, "packageBasePath");
+        HBox entityChooser = nodeCreateUtil.createLabelAndFileChooser("请选择entity类模板文件：", "template/Entity.java", paramEntity, booleanEntity, "entityChooser", "isEntity");
+        HBox voChooser = nodeCreateUtil.createLabelAndFileChooser("请选择vo类模板文件：", "template/VO.java", paramVo, booleanVo, "voChooser", "isVo");
+        HBox mapperChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapper类模板文件：", "template/Mapper.java", paramMapper, booleanMapper, "mapperChooser", "isMapper");
+        HBox serviceChooser = nodeCreateUtil.createLabelAndFileChooser("请选择service类模板文件：", "template/Service.java", paramService, booleanService, "serviceChooser", "isService");
+        HBox boChooser = nodeCreateUtil.createLabelAndFileChooser("请选择bo类模板文件：", "template/BO.java", paramBo, booleanBo, "boChooser", "isBo");
         // 处理按钮
         Button executeButton = buttonUtil.createInstance();
         TextField resultPath = new TextField();
@@ -104,14 +127,28 @@ public class DatabaseConfig {
      * 数据库类型
      * @return
      */
-    private HBox databaseType() {
+    private HBox databaseType(String databaseType) {
         // 标签
         Label typeLabel = new Label("选择数据库类型：");
         // 数据库类型，下拉框
         ObservableList types = FXCollections.observableArrayList(DatabaseType.ORACLE, DatabaseType.MYSQL);
         ComboBox databaseTypeBox = new ComboBox(types);
         // 设置默认为第一个
-        databaseTypeBox.getSelectionModel().select(0);
+        if (DatabaseType.MYSQL.getType().equals(databaseType)) {
+            databaseTypeBox.getSelectionModel().select(1);
+        } else {
+            databaseTypeBox.getSelectionModel().select(0);
+        }
+        databaseTypeBox.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // 获取当前选中的值
+                String value = String.valueOf(databaseTypeBox.getSelectionModel().getSelectedItem());
+                if (!value.equals(databaseType)) {
+                    Config.set("databaseType", value);
+                }
+            }
+        });
         // 添加到行
         HBox typeHbox = new HBox();
         typeHbox.setSpacing(10);

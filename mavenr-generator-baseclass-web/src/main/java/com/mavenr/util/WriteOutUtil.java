@@ -1,7 +1,6 @@
 package com.mavenr.util;
 
 import com.mavenr.entity.*;
-import com.mavenr.enums.DatabaseTypeEnum;
 import com.mavenr.generator.impl.*;
 import com.mavenr.service.OutputInterface;
 

@@ -1,6 +1,7 @@
 package com.mavenr.systemenum;
 
-import com.mavenr.window.DatabaseConfig;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @author mavenr
@@ -8,6 +9,8 @@ import com.mavenr.window.DatabaseConfig;
  * @Description 数据库类型
  * @Date 2022/8/17 14:15
  */
+@AllArgsConstructor
+@Getter
 public enum DatabaseType {
 
     ORACLE(1, "ORACLE"), MYSQL(2, "MYSQL");
@@ -15,12 +18,4 @@ public enum DatabaseType {
     private int id;
 
     private String type;
-
-    DatabaseType() {
-
-    }
-    DatabaseType(int id, String type) {
-        this.id = id;
-        this.type = type;
-    }
 }

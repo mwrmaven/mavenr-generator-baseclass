@@ -1,5 +1,8 @@
 package com.mavenr.util;
 
+import com.mavenr.config.Config;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -13,6 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 
 /**
@@ -23,12 +27,33 @@ import java.io.InputStream;
  */
 public class NodeCreateUtil {
 
-    public HBox createLabelAndTextField(String labelName) {
+    /**
+     * 生成标签、文本
+     * @param labelName 标签名称
+     * @param text 文本的值
+     * @param paramKey 配置文件中的key
+     * @return
+     */
+    public HBox createLabelAndTextField(String labelName, String text, String paramKey) {
         // 标签
         Label label = new Label(labelName);
         // 输入框
         TextField tf = new TextField();
         tf.setPrefWidth(200);
+        if (text != null && !"".equals(text.trim())) {
+            tf.setText(text);
+        }
+
+        // 失去焦点事件
+        tf.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // 判断tf当前的值是否与text相同
+                if (!tf.getText().equals(text)) {
+                    Config.set(paramKey, tf.getText());
+                }
+            }
+        });
 
         // 添加到行
         HBox hbox = new HBox();
@@ -42,9 +67,13 @@ public class NodeCreateUtil {
      * 生成标签、文本框、下载按钮、选择按钮、复选框
      * @param labelName 标签名称
      * @param filePath resources下文件的路径
+     * @param text 文本值
+     * @param isSelect 是否选择
+     * @param textKey 参数文件中文本值的key
+     * @param isSelectKey 参数文件中是否选中的key
      * @return
      */
-    public HBox createLabelAndFileChooser(String labelName, String filePath) {
+    public HBox createLabelAndFileChooser(String labelName, String filePath, String text, String isSelect, String textKey, String isSelectKey) {
         // 标签
         Label label = new Label(labelName);
         // 输入框
@@ -52,6 +81,16 @@ public class NodeCreateUtil {
         tf.setPrefWidth(400);
         tf.setDisable(true);
         tf.setPromptText("不勾选则不生成数据；不选择，则按默认格式生成数据");
+        if (text != null && !"".equals(text.trim())) {
+            tf.setText(text);
+        }
+        //监听输入框中值的变化
+        tf.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                Config.set(textKey, newValue);
+            }
+        });
 
         // 下载模板文件
         Button downloadTemplateButton = new Button("下载模板文件");
@@ -64,8 +103,12 @@ public class NodeCreateUtil {
                 if (file != null) {
                     // 将文件存储到指定路径下
                     String dirPath = file.getPath();
-                    // 获取配置文件
-                    InputStream systemResourceAsStream = ClassLoader.getSystemResourceAsStream(filePath);
+                    String fileName = filePath.replace("template", "");
+                    dirPath += fileName;
+                    // 获取文件
+                    InputStream in = ClassLoader.getSystemResourceAsStream(filePath);
+                    // 写出文件
+                    FileOptions.writeToFile(in, dirPath);
                 }
             }
         });
@@ -85,6 +128,19 @@ public class NodeCreateUtil {
         // 复选框
         CheckBox cb = new CheckBox();
         cb.setSelected(true);
+        if (isSelect != null && !"".equals(isSelect.trim())) {
+            // 判断值是否为false
+            if ("FALSE".equals(isSelect.toUpperCase())) {
+                cb.setSelected(false);
+            }
+        }
+        // 监听复选框的变化
+        cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                Config.set(isSelectKey, String.valueOf(newValue).toUpperCase());
+            }
+        });
         // 添加到行
         HBox hbox = new HBox();
         hbox.setSpacing(10);
