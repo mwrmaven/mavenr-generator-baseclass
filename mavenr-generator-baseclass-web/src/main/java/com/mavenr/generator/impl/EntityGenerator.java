@@ -44,7 +44,6 @@ public class EntityGenerator implements ClassGeneratorInterface {
                 if (i == 1) {
                     continue;
                 }
-                line = line.trim();
                 if (flag) {
                     temp.append(line).append("\n");
                 } else {
