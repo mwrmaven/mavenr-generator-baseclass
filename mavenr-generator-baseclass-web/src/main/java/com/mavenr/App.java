@@ -51,7 +51,7 @@ public class App extends Application {
         stage.setWidth(standardWidth);
         stage.setHeight(standardHeight + 100);
         stage.setMinWidth(standardWidth);
-        stage.setMaxHeight(standardHeight + 100);
+        stage.setMinHeight(standardHeight + 100);
         stage.show();
 
         // 此时可以获取到scene的实际宽高
