@@ -8,13 +8,14 @@ import com.mavenr.util.CodeCreateUtil;
 
 /**
  * @author mavenr
- * @Classname MapperGenerator
- * @Description Mapper类信息生成器
- * @Date 2021/12/22 11:29
+ * @Classname BOGenerator
+ * @Description BO类生成器
+ * @Date 2022/8/22 10:21
  */
-public class MapperGenerator implements ClassGeneratorInterface {
+public class BOGenerator implements ClassGeneratorInterface {
     @Override
     public ClassInfo create(GeneratorConfig generatorConfig) {
-        return CodeCreateUtil.createMapper(generatorConfig, ClassTypeEnum.MAPPER.getClassType());
+        // 生成 bo 的类代码
+        return CodeCreateUtil.createEntity(generatorConfig, ClassTypeEnum.BO.getClassType());
     }
 }

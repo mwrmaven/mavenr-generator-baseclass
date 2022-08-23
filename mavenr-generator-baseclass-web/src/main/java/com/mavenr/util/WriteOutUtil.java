@@ -53,9 +53,10 @@ public class WriteOutUtil {
                         .build();
 
                 try {
+                    BufferedReader br = null;
+
                     String entityPath = baseConfig.getEntityPath();
                     if (entityPath != null) {
-                        BufferedReader br = null;
                         if ("".equals(entityPath)) {
                             br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Entity.java")));
                         } else {
@@ -68,7 +69,6 @@ public class WriteOutUtil {
 
                     String voPath = baseConfig.getVoPath();
                     if (voPath != null) {
-                        BufferedReader br = null;
                         if ("".equals(voPath)) {
                             br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/VO.java")));
                         } else {
@@ -79,26 +79,66 @@ public class WriteOutUtil {
                         outputInterface.push(vo.getCode(), vo.getFileName(), outPath);
                     }
 
+                    String boPath = baseConfig.getBoPath();
+                    if (boPath != null) {
+                        if ("".equals(boPath)) {
+                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/BO.java")));
+                        } else {
+                            br = new BufferedReader(new InputStreamReader(new FileInputStream(boPath)));
+                        }
+                        generatorConfig.setBr(br);
+                        ClassInfo bo = new BOGenerator().create(generatorConfig);
+                        outputInterface.push(bo.getCode(), bo.getFileName(), outPath);
+                    }
 
-//                    ClassInfo mapper = new MapperGenerator().create(generatorConfig);
-//                    outputInterface.push(mapper.getCode(), mapper.getFileName(), outPath);
-//
-//                    ClassInfo mapperXml = null;
-//                    if (DatabaseTypeEnum.ORACLE.getType().equalsIgnoreCase(type)) {
-//                        mapperXml = new OracleMapperXmlGenerator().create(generatorConfig);
-//                    } else if (DatabaseTypeEnum.MYSQL.getType().equalsIgnoreCase(type)) {
-//                        mapperXml = new MysqlMapperXmlGenerator().create(generatorConfig);
-//                    }
-//                    outputInterface.push(mapperXml.getCode(), mapperXml.getFileName(), outPath);
-//
-//                    ClassInfo service = new ServiceGenerator().create(generatorConfig);
-//                    outputInterface.push(service.getCode(), service.getFileName(), outPath);
-//
-//                    ClassInfo serviceImpl = new ServiceImplGenerator().create(generatorConfig);
-//                    outputInterface.push(serviceImpl.getCode(), serviceImpl.getFileName(), outPath);
-//
-//                    ClassInfo importBo = new ImportBOGenerator().create(generatorConfig);
-//                    outputInterface.push(importBo.getCode(), importBo.getFileName(), outPath);
+                    String mapperPath = baseConfig.getMapperPath();
+                    if (mapperPath != null) {
+                        if ("".equals(mapperPath)) {
+                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Mapper.java")));
+                        } else {
+                            br = new BufferedReader(new InputStreamReader(new FileInputStream(mapperPath)));
+                        }
+                        generatorConfig.setBr(br);
+                        ClassInfo mapper = new MapperGenerator().create(generatorConfig);
+                        outputInterface.push(mapper.getCode(), mapper.getFileName(), outPath);
+                    }
+
+                    String mapperXmlPath = baseConfig.getMapperXmlPath();
+                    if (mapperXmlPath != null) {
+                        if ("".equals(mapperXmlPath)) {
+                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Mapper.xml")));
+                        } else {
+                            br = new BufferedReader(new InputStreamReader(new FileInputStream(mapperXmlPath)));
+                        }
+                        generatorConfig.setBr(br);
+                        ClassInfo mapperXml = new MapperXmlGenerator().create(generatorConfig);
+                        outputInterface.push(mapperXml.getCode(), mapperXml.getFileName(), outPath);
+                    }
+
+                    String servicePath = baseConfig.getServicePath();
+                    if (servicePath != null) {
+                        if ("".equals(servicePath)) {
+                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Service.java")));
+                        } else {
+                            br = new BufferedReader(new InputStreamReader(new FileInputStream(servicePath)));
+                        }
+                        generatorConfig.setBr(br);
+                        ClassInfo service = new ServiceGenerator().create(generatorConfig);
+                        outputInterface.push(service.getCode(), service.getFileName(), outPath);
+                    }
+
+                    String serviceImplPath = baseConfig.getServiceImplPath();
+                    if (serviceImplPath != null) {
+                        if ("".equals(serviceImplPath)) {
+                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/ServiceImpl.java")));
+                        } else {
+                            br = new BufferedReader(new InputStreamReader(new FileInputStream(serviceImplPath)));
+                        }
+                        generatorConfig.setBr(br);
+                        ClassInfo serviceImpl = new ServiceImplGenerator().create(generatorConfig);
+                        outputInterface.push(serviceImpl.getCode(), serviceImpl.getFileName(), outPath);
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

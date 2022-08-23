@@ -15,8 +15,9 @@ public enum ClassTypeEnum {
     ENTITY("Entity"),
     MAPPER("Mapper"),
     SERVICE("Service"),
-    VO("Vo"),
-    BO("Bo");
+    SERVICEIMPL("ServiceImpl"),
+    VO("VO"),
+    BO("BO");
 
     private String classType;
 

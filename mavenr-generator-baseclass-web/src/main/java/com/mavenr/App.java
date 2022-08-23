@@ -49,7 +49,9 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setTitle("根据数据库表生成增删改查类");
         stage.setWidth(standardWidth);
-        stage.setHeight(standardHeight);
+        stage.setHeight(standardHeight + 100);
+        stage.setMinWidth(standardWidth);
+        stage.setMaxHeight(standardHeight + 100);
         stage.show();
 
         // 此时可以获取到scene的实际宽高

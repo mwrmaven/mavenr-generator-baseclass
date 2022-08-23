@@ -69,12 +69,16 @@ public class DatabaseConfig {
         String paramEntity = Config.get("entityChooser");
         String paramVo = Config.get("voChooser");
         String paramMapper = Config.get("mapperChooser");
+        String paramMapperXml = Config.get("mapperXmlChooser");
         String paramService = Config.get("serviceChooser");
+        String paramServiceImpl = Config.get("serviceImplChooser");
         String paramBo = Config.get("boChooser");
         String booleanEntity = Config.get("isEntity");
         String booleanVo = Config.get("isVo");
         String booleanMapper = Config.get("isMapper");
+        String booleanMapperXml = Config.get("isMapperXml");
         String booleanService = Config.get("isService");
+        String booleanServiceImpl = Config.get("isServiceImpl");
         String booleanBo = Config.get("isBo");
 
         HBox databaseType = databaseType(paramType);
@@ -88,7 +92,9 @@ public class DatabaseConfig {
         HBox entityChooser = nodeCreateUtil.createLabelAndFileChooser("请选择entity类模板文件：", "template/Entity.java", paramEntity, booleanEntity, "entityChooser", "isEntity");
         HBox voChooser = nodeCreateUtil.createLabelAndFileChooser("请选择vo类模板文件：", "template/VO.java", paramVo, booleanVo, "voChooser", "isVo");
         HBox mapperChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapper类模板文件：", "template/Mapper.java", paramMapper, booleanMapper, "mapperChooser", "isMapper");
+        HBox mapperXmlChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapperXml类模板文件：", "template/Mapper.xml", paramMapperXml, booleanMapperXml, "mapperXmlChooser", "isMapperXml");
         HBox serviceChooser = nodeCreateUtil.createLabelAndFileChooser("请选择service类模板文件：", "template/Service.java", paramService, booleanService, "serviceChooser", "isService");
+        HBox serviceImplChooser = nodeCreateUtil.createLabelAndFileChooser("请选择serviceImpl类模板文件：", "template/ServiceImpl.java", paramServiceImpl, booleanServiceImpl, "serviceImplChooser", "isServiceImpl");
         HBox boChooser = nodeCreateUtil.createLabelAndFileChooser("请选择bo类模板文件：", "template/BO.java", paramBo, booleanBo, "boChooser", "isBo");
         // 处理按钮
         Button executeButton = buttonUtil.createInstance();
@@ -112,7 +118,9 @@ public class DatabaseConfig {
                 entityChooser,
                 voChooser,
                 mapperChooser,
+                mapperXmlChooser,
                 serviceChooser,
+                serviceImplChooser,
                 boChooser,
                 bottomHbox);
 
@@ -192,10 +200,14 @@ public class DatabaseConfig {
                 String voPath = getTemplatePath(children.get(9));
                 // mapper模板文件路径
                 String mapperPath = getTemplatePath(children.get(10));
+                // mapperXml模板文件路径
+                String mapperXmlPath = getTemplatePath(children.get(11));
                 // service模板文件路径
-                String servicePath = getTemplatePath(children.get(11));
+                String servicePath = getTemplatePath(children.get(12));
+                // serviceImpl模板文件路径
+                String serviceImplPath = getTemplatePath(children.get(13));
                 // bo模板文件路径
-                String boPath = getTemplatePath(children.get(12));
+                String boPath = getTemplatePath(children.get(14));
 
                 String outPath = System.getProperty("user.dir") + File.separator + "code";
                 BaseConfig bc = BaseConfig.builder()
@@ -210,7 +222,9 @@ public class DatabaseConfig {
                         .entityPath(entityPath)
                         .voPath(voPath)
                         .mapperPath(mapperPath)
+                        .mapperXmlPath(mapperXmlPath)
                         .servicePath(servicePath)
+                        .serviceImplPath(serviceImplPath)
                         .boPath(boPath)
                         .outPath(outPath)
                         .build();

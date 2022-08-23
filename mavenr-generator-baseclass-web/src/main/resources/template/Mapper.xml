@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${packagePath}.mapper.${mapperClassName}">
+
+    <sql id="TableName">
+        ${tableName}
+    </sql>
+
+    <sql id="All_Columns">
+        ${columns}
+    </sql>
+
+    <!-- 通用--动态插入数据 -->
+    <insert id="insertSelective" parameterType="${packagePath}.entity.${entityClassName}">
+        INSERT INTO <include refid="TableName"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="${propertyName} != null">${columnName},</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="${propertyName} != null">#{${propertyName}, jdbcType=${columnType}},</if>
+        </trim>
+    </insert>
+
+    <!-- 通用--批量插入数据 -->
+    <insert id="insertList" parameterType="java.util.List">
+        INSERT INTO <include refid="TableName"/> (<include refid="All_Columns"/>)
+        SELECT a.* FROM (
+        <foreach collection="list" item="item" index="index" separator="union all">
+            SELECT
+                #{item.${propertyName}, jdbcType=${columnType}}${comma}
+            FROM dual
+        </foreach>
+        ) a
+    </insert>
+
+    <!-- 通用--动态查询数据 -->
+    <select id="selectByModel" parameterType="${packagePath}.entity.${entityClassName}" resultType="${packagePath}.entity.${entityClassName}">
+        SELECT <include refid="All_Columns"/> FROM <include refid="TableName"/>
+        <where>
+            <if test="${propertyName} != null">and ${columnName} = #{${propertyName}, jdbcType=${columnType}}</if>
+        </where>
+    </select>
+
+    <!-- 通用--配置动态更新数据-根据主键更新 -->
+    <update id="updateByPrimaryKeySelective" parameterType="${packagePath}.entity.${entityClassName}">
+        UPDATE <include refid="TableName"/>
+        <set>
+            <if test="${propertyName} != null">${columnName} = #{${propertyName}, jdbcType=${columnType}},</if>
+        </set>
+        WHERE ${primaryKeyColumn} = #{${primaryKeyProperty}, jdbcType=${primaryKeyType}}
+    </update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

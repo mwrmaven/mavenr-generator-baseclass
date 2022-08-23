@@ -27,7 +27,9 @@ public class BaseConfig {
     String entityPath;
     String voPath;
     String mapperPath;
+    String mapperXmlPath;
     String servicePath;
+    String serviceImplPath;
     String boPath;
     String outPath;
 }

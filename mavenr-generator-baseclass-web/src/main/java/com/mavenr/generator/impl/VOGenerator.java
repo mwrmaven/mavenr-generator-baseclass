@@ -1,15 +1,11 @@
 package com.mavenr.generator.impl;
 
 import com.mavenr.entity.ClassInfo;
-import com.mavenr.entity.Column;
 import com.mavenr.entity.GeneratorConfig;
-import com.mavenr.enums.ColumnEnum;
+import com.mavenr.enums.ClassTypeEnum;
 import com.mavenr.generator.ClassGeneratorInterface;
-import com.mavenr.util.TransferUtil;
+import com.mavenr.util.CodeCreateUtil;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author mavenr
@@ -20,7 +16,7 @@ import java.util.Set;
 public class VOGenerator implements ClassGeneratorInterface {
     @Override
     public ClassInfo create(GeneratorConfig generatorConfig) {
-
-        return null;
+        // 生成 vo 的类代码
+        return CodeCreateUtil.createEntity(generatorConfig, ClassTypeEnum.VO.getClassType());
     }
 }

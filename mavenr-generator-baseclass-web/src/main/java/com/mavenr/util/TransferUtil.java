@@ -2,11 +2,13 @@ package com.mavenr.util;
 
 import com.mavenr.entity.Column;
 import com.mavenr.entity.GeneratorConfig;
+import com.mavenr.enums.ClassTypeEnum;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author mavenr
@@ -94,6 +96,30 @@ public class TransferUtil {
                     break;
                 case "${createTime}":
                     result = result.replace("${createTime}", sdf.format(new Date()));
+                    break;
+                case "${propertyName}":
+                    result = result.replace("${propertyName}", column.getPropertyName());
+                    break;
+                case "${propertyType}":
+                    result = result.replace("${propertyType}", column.getPropertyType());
+                    break;
+                case "${entityClassName}":
+                    result = result.replace("${entityClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + ClassTypeEnum.ENTITY.getClassType());
+                    break;
+                case "${entityClassPropertyName}":
+                    result = result.replace("${entityClassPropertyName}", TransferUtil.toPropertyName(generatorConfig.getTableName()) + ClassTypeEnum.ENTITY.getClassType());
+                    break;
+                case "${mapperClassName}":
+                    result = result.replace("${entityClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + ClassTypeEnum.MAPPER.getClassType());
+                    break;
+                case "${mapperClassPropertyName}":
+                    result = result.replace("${mapperClassPropertyName}", TransferUtil.toPropertyName(generatorConfig.getTableName()) + ClassTypeEnum.MAPPER.getClassType());
+                    break;
+                case "${serviceClassName}":
+                    result = result.replace("${serviceClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + ClassTypeEnum.SERVICE.getClassType());
+                    break;
+                case "${columns}":
+                    result = result.replace("${columns}", generatorConfig.getColumnList().stream().map(Column::getColumnName).collect(Collectors.joining(", ")));
                     break;
                 default:
             }
