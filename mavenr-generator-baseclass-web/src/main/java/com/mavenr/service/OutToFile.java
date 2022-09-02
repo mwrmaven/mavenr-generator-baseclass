@@ -1,5 +1,7 @@
 package com.mavenr.service;
 
+import com.mavenr.systemenum.Charset;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +34,7 @@ public class OutToFile implements OutputInterface {
 
         FileOutputStream fileOutputStream = new FileOutputStream(new File(filePath));
         FileChannel channel = fileOutputStream.getChannel();
-        ByteBuffer buffer = ByteBuffer.wrap(data.getBytes("UTF-8"));
+        ByteBuffer buffer = ByteBuffer.wrap(data.getBytes(Charset.UTF_8.getType()));
         channel.write(buffer);
         channel.close();
         fileOutputStream.flush();

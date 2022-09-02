@@ -174,7 +174,8 @@ public class CodeCreateUtil {
             String param = matcher.group();
             if ("${mapperClassName}".equals(param) || "${entityClassName}".equals(param)
                     || "${packagePath}".equals(param) || "${tableName}".equals(param)
-                    || "${columns}".equals(param) || line.trim().startsWith("WHERE ")) {
+                    || "${columns}".equals(param) || line.trim().startsWith("WHERE ")
+                    || "${primaryKeyType}".equals(param) ) {
                 matcher = pattern.matcher(result);
                 while (matcher.find()) {
                     param = matcher.group();
@@ -190,7 +191,7 @@ public class CodeCreateUtil {
                             result = result.replace("${primaryKeyProperty}", columnPrimaryKey.getPropertyName());
                             break;
                         case "${primaryKeyType}":
-                            result = result.replace("${columnType}", columnPrimaryKey.getColumnType());
+                            result = result.replace("${primaryKeyType}", columnPrimaryKey.getColumnType());
                             break;
                         case "${columns}":
                             result = result.replace("${columns}", columnList.stream().map(Column::getColumnName).collect(Collectors.joining(", ")));
@@ -214,9 +215,9 @@ public class CodeCreateUtil {
                 while (matcher.find()) {
                     pList.add(matcher.group());
                 }
-                String temp = result;
                 // 遍历所有表字段
                 for (Column column : columnList) {
+                    String temp = result;
                     for (String str : pList) {
                         switch (str) {
                             case "${columnName}":
@@ -240,6 +241,8 @@ public class CodeCreateUtil {
                     sb.append(temp).append("\n");
                 }
             }
+        } else {
+            sb.append(line);
         }
         return sb.toString();
     }

@@ -36,7 +36,7 @@ public class ConnectionUtil {
             driverClassName = "oracle.jdbc.OracleDriver";
         } else if (DatabaseTypeEnum.MYSQL.getType().equals(type)) {
             // Mysql
-            url = "jdbc:mysql://" + address + ":" + port + "/" + dbName + "?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&useSSL=FALSE";
+            url = "jdbc:mysql://" + address + ":" + port + "/" + dbName + "?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8";
             driverClassName = "com.mysql.cj.jdbc.Driver";
         }
 
@@ -44,6 +44,8 @@ public class ConnectionUtil {
         if ("".equals(url) || "".equals(url.trim())) {
             return null;
         }
+
+        System.out.println("驱动：" + driverClassName);
 
         Connection connection = null;
         String username = baseConfig.getUser();

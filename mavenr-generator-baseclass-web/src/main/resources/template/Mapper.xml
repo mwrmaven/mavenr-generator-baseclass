@@ -10,7 +10,7 @@
         ${columns}
     </sql>
 
-    <!-- 通用--动态插入数据 -->
+    <!-- 通用-动态插入数据 -->
     <insert id="insertSelective" parameterType="${packagePath}.entity.${entityClassName}">
         INSERT INTO <include refid="TableName"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -21,7 +21,7 @@
         </trim>
     </insert>
 
-    <!-- 通用--批量插入数据 -->
+    <!-- 通用-批量插入数据 -->
     <insert id="insertList" parameterType="java.util.List">
         INSERT INTO <include refid="TableName"/> (<include refid="All_Columns"/>)
         SELECT a.* FROM (
@@ -33,7 +33,7 @@
         ) a
     </insert>
 
-    <!-- 通用--动态查询数据 -->
+    <!-- 通用-动态查询数据 -->
     <select id="selectByModel" parameterType="${packagePath}.entity.${entityClassName}" resultType="${packagePath}.entity.${entityClassName}">
         SELECT <include refid="All_Columns"/> FROM <include refid="TableName"/>
         <where>
@@ -41,7 +41,7 @@
         </where>
     </select>
 
-    <!-- 通用--配置动态更新数据-根据主键更新 -->
+    <!-- 通用-配置动态更新数据-根据主键更新 -->
     <update id="updateByPrimaryKeySelective" parameterType="${packagePath}.entity.${entityClassName}">
         UPDATE <include refid="TableName"/>
         <set>
