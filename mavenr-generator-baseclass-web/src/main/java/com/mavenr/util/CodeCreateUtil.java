@@ -235,10 +235,10 @@ public class CodeCreateUtil {
                             default:
                         }
                     }
-                    if ("${comma}".equals(pList.get(pList.size() - 1))) {
-                        temp = temp.substring(0, temp.length() - 1);
-                    }
                     sb.append(temp).append("\n");
+                }
+                if ("${comma}".equals(pList.get(pList.size() - 1))) {
+                    sb = new StringBuilder(sb.substring(0, sb.length() - 2)).append("\n");
                 }
             }
         } else {
