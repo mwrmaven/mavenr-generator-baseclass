@@ -141,6 +141,7 @@ public class DatabaseConfig {
         // 数据库类型，下拉框
         ObservableList types = FXCollections.observableArrayList(DatabaseType.ORACLE, DatabaseType.MYSQL);
         ComboBox databaseTypeBox = new ComboBox(types);
+        databaseTypeBox.setStyle("-fx-background-color: #f9cb9c");
         // 设置默认为第一个
         if (DatabaseType.MYSQL.getType().equals(databaseType)) {
             databaseTypeBox.getSelectionModel().select(1);
@@ -234,6 +235,11 @@ public class DatabaseConfig {
                 // 根据tableBOList生成code代码并将代码导出到文件
                 WriteOutUtil.write(tableList, new OutToFile(), bc);
                 System.out.println("程序执行完毕，文件输出路径为：" + outPath);
+                // 将输出路径弹窗显示到界面中
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, outPath);
+                alert.setTitle("操作完成");
+                alert.setHeaderText("文件输出路径如下");
+                alert.showAndWait();
             }
         });
     }

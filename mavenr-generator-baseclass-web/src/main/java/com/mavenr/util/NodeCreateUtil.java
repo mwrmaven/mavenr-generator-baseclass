@@ -39,6 +39,7 @@ public class NodeCreateUtil {
         Label label = new Label(labelName);
         // 输入框
         TextField tf = new TextField();
+        tf.setStyle("-fx-background-color: none; -fx-border-color: #ff9900; -fx-border-radius: 20");
         tf.setPrefWidth(200);
         if (text != null && !"".equals(text.trim())) {
             tf.setText(text);
@@ -80,6 +81,7 @@ public class NodeCreateUtil {
         TextField tf = new TextField();
         tf.setPrefWidth(400);
         tf.setDisable(true);
+        tf.setStyle("-fx-border-color: black; -fx-border-radius: 20; -fx-background-radius: 20");
         tf.setPromptText("不勾选则不生成数据；不选择，则按默认格式生成数据");
         if (text != null && !"".equals(text.trim())) {
             tf.setText(text);
@@ -94,6 +96,7 @@ public class NodeCreateUtil {
 
         // 下载模板文件
         Button downloadTemplateButton = new Button("下载模板文件");
+        downloadTemplateButton.setStyle("-fx-background-color: #ffe599;");
         downloadTemplateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -115,6 +118,7 @@ public class NodeCreateUtil {
 
         // 按钮
         Button button = new Button("选择文件");
+        button.setStyle("-fx-background-color: #9fc5e8");
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
