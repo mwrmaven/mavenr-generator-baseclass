@@ -13,8 +13,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ColumnEnum{
-    // 数据库中的VARCHAR类型
+    // 数据库中的VARCHAR和CHAR类型
     VARCHAR("VARCHAR", "String", "java.lang.String"),
+    CHAR("CHAR", "String", "java.lang.String"),
     // 数据库中的INTEGER类型
     INTEGER("INTEGER", "Integer", "java.lang.Integer"),
     // 数据库中的INT类型

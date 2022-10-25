@@ -4,10 +4,7 @@ import com.mavenr.config.Config;
 import com.mavenr.entity.BaseConfig;
 import com.mavenr.entity.Table;
 import com.mavenr.enums.DatabaseTypeEnum;
-import com.mavenr.service.DatabaseBasic;
-import com.mavenr.service.MySqlDatabase;
-import com.mavenr.service.OracleDatabase;
-import com.mavenr.service.OutToFile;
+import com.mavenr.service.*;
 import com.mavenr.systemenum.DatabaseType;
 import com.mavenr.util.BatchButton;
 import com.mavenr.util.NodeCreateUtil;
@@ -139,7 +136,7 @@ public class DatabaseConfig {
         // 标签
         Label typeLabel = new Label("选择数据库类型：");
         // 数据库类型，下拉框
-        ObservableList types = FXCollections.observableArrayList(DatabaseType.ORACLE, DatabaseType.MYSQL);
+        ObservableList types = FXCollections.observableArrayList(DatabaseType.ORACLE, DatabaseType.MYSQL, DatabaseType.DMDB);
         ComboBox databaseTypeBox = new ComboBox(types);
         databaseTypeBox.setStyle("-fx-background-color: #f9cb9c");
         // 设置默认为第一个
@@ -284,6 +281,8 @@ public class DatabaseConfig {
             databaseBasic = new OracleDatabase();
         } else if (DatabaseTypeEnum.MYSQL.getType().equals(type)) {
             databaseBasic = new MySqlDatabase();
+        } else if (DatabaseTypeEnum.DMDB.getType().equals(type)) {
+            databaseBasic = new DMDatabase();
         }
         databaseBasic.init(baseConfig);
         List<Table> result = null;

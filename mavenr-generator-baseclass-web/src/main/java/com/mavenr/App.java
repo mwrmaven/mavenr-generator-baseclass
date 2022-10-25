@@ -9,7 +9,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.io.InputStream;
 
 /**
  * javafx 启动类

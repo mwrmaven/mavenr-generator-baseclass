@@ -38,6 +38,10 @@ public class ConnectionUtil {
             // Mysql
             url = "jdbc:mysql://" + address + ":" + port + "/" + dbName + "?serverTimezone=UTC&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8";
             driverClassName = "com.mysql.cj.jdbc.Driver";
+        } else if (DatabaseTypeEnum.DMDB.getType().equals(type)) {
+            // DM jdbc:dm://localhost:5236
+            url = "jdbc:dm://" + address + ":" + port;
+            driverClassName = "dm.jdbc.driver.DmDriver";
         }
 
         // 判断url地址

@@ -15,7 +15,9 @@ public enum DatabaseTypeEnum {
     // oracle数据库
     ORACLE("ORACLE", 1),
     // mysql数据库
-    MYSQL("MYSQL", 2);
+    MYSQL("MYSQL", 2),
+    // dm数据库
+    DMDB("DMDB", 3);
 
     /**
      * 数据库的类型

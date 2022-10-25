@@ -13,7 +13,9 @@ import lombok.Getter;
 @Getter
 public enum DatabaseType {
 
-    ORACLE(1, "ORACLE"), MYSQL(2, "MYSQL");
+    ORACLE(1, "ORACLE"),
+    MYSQL(2, "MYSQL"),
+    DMDB(3, "DMDB");
 
     private int id;
 
