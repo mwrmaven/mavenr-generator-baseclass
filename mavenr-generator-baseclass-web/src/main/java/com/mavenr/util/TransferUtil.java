@@ -104,10 +104,10 @@ public class TransferUtil {
                     result = result.replace("${propertyType}", column.getPropertyType());
                     break;
                 case "${entityClassName}":
-                    result = result.replace("${entityClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + ClassTypeEnum.ENTITY.getClassType());
+                    result = result.replace("${entityClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()));
                     break;
                 case "${entityClassPropertyName}":
-                    result = result.replace("${entityClassPropertyName}", TransferUtil.toPropertyName(generatorConfig.getTableName()) + ClassTypeEnum.ENTITY.getClassType());
+                    result = result.replace("${entityClassPropertyName}", TransferUtil.toPropertyName(generatorConfig.getTableName()));
                     break;
                 case "${mapperClassName}":
                     result = result.replace("${mapperClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + ClassTypeEnum.MAPPER.getClassType());

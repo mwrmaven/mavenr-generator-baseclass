@@ -12,7 +12,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum ClassTypeEnum {
-    ENTITY("Entity"),
     MAPPER("Mapper"),
     SERVICE("Service"),
     SERVICEIMPL("ServiceImpl"),

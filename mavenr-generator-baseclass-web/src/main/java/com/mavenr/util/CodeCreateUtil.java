@@ -114,7 +114,7 @@ public class CodeCreateUtil {
 
     public static ClassInfo createMapperXml(GeneratorConfig generatorConfig) {
         String tableName = generatorConfig.getTableName();
-        String entityClassName = TransferUtil.toClassBaseName(tableName) + ClassTypeEnum.ENTITY.getClassType();
+        String entityClassName = TransferUtil.toClassBaseName(tableName);
         String mapperClassName = TransferUtil.toClassBaseName(tableName) + ClassTypeEnum.MAPPER.getClassType();
         String packagePath = generatorConfig.getPackagePath();
         List<Column> columnList = generatorConfig.getColumnList();
@@ -200,7 +200,7 @@ public class CodeCreateUtil {
                             result = result.replace("${mapperClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + ClassTypeEnum.MAPPER.getClassType());
                             break;
                         case "${entityClassName}":
-                            result = result.replace("${entityClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + ClassTypeEnum.ENTITY.getClassType());
+                            result = result.replace("${entityClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()));
                             break;
                         case "${packagePath}":
                             result = result.replace("${packagePath}", generatorConfig.getPackagePath());

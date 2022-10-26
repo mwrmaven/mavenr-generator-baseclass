@@ -19,7 +19,7 @@ public class EntityGenerator implements ClassGeneratorInterface {
     @Override
     public ClassInfo create(GeneratorConfig generatorConfig) {
         // 生成 entity 的类代码
-        return CodeCreateUtil.createEntity(generatorConfig, ClassTypeEnum.ENTITY.getClassType());
+        return CodeCreateUtil.createEntity(generatorConfig, "");
     }
 
 
