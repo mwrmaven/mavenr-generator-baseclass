@@ -42,6 +42,7 @@ public class WriteOutUtil {
             String tableName = item.getTableName();
             String tableNameCn = item.getTableNameCn();
             List<Column> columns = item.getColumns();
+            String dbName = baseConfig.getName();
 
             if (columns == null || columns.size() == 0) {
                 System.out.println(tableName + "表中字段为空");
@@ -50,6 +51,7 @@ public class WriteOutUtil {
                         .packagePath(packagePath)
                         .tableName(tableName)
                         .tableNameCn(tableNameCn)
+                        .dbName(dbName)
                         .columnList(columns)
                         .build();
 

@@ -24,5 +24,6 @@ public class GeneratorConfig {
     private String packagePath;
     private String tableName;
     private String tableNameCn;
+    private String dbName;
     private List<Column> columnList;
 }

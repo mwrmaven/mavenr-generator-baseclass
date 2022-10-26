@@ -3,7 +3,7 @@
 <mapper namespace="${packagePath}.mapper.${mapperClassName}">
 
     <sql id="TableName">
-        ${tableName}
+        ${dbName}.${tableName}
     </sql>
 
     <sql id="All_Columns">

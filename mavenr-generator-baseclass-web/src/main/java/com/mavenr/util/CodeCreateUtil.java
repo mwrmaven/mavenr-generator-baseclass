@@ -175,7 +175,7 @@ public class CodeCreateUtil {
             if ("${mapperClassName}".equals(param) || "${entityClassName}".equals(param)
                     || "${packagePath}".equals(param) || "${tableName}".equals(param)
                     || "${columns}".equals(param) || line.trim().startsWith("WHERE ")
-                    || "${primaryKeyType}".equals(param) ) {
+                    || "${primaryKeyType}".equals(param) || "${dbName}".equals(param)) {
                 matcher = pattern.matcher(result);
                 while (matcher.find()) {
                     param = matcher.group();
@@ -204,6 +204,9 @@ public class CodeCreateUtil {
                             break;
                         case "${packagePath}":
                             result = result.replace("${packagePath}", generatorConfig.getPackagePath());
+                            break;
+                        case "${dbName}":
+                            result = result.replace("${dbName}", generatorConfig.getDbName());
                             break;
                         default:
                     }
