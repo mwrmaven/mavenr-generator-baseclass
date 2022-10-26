@@ -30,7 +30,7 @@ public class DMDatabase extends DatabaseBasic{
         // 表名集合
         List<String> names = new ArrayList<>();
         if (scanAllTables) {
-            String showTablesSql = "select * from dba_tab_comments where OWNER= '" + dbName + "'";
+            String showTablesSql = "select * from user_tab_comments where TABLE_TYPE='TABLE'";
             ResultSet resultSet = statement.executeQuery(showTablesSql);
             while (resultSet.next()) {
                 names.add(resultSet.getString("TABLE_NAME"));
@@ -51,8 +51,8 @@ public class DMDatabase extends DatabaseBasic{
             for (String item : names) {
                 Table table = Table.builder().tableName(item).build();
                 // 查询表信息
-                String findTableInfoSql = "select * from dba_tab_comments " +
-                        "where OWNER= '" + dbName + "' and TABLE_NAME='" + item + "'";
+                String findTableInfoSql = "select * from user_tab_comments " +
+                        "where TABLE_NAME='" + item + "' and TABLE_TYPE='TABLE'";
                 ResultSet tableInfo = statement.executeQuery(findTableInfoSql);
                 while (tableInfo.next()) {
                     String tableNameCn = tableInfo.getString("COMMENTS");
@@ -83,8 +83,8 @@ public class DMDatabase extends DatabaseBasic{
     private List<Column> allColumns(Statement statement, String dbName, String tableName) throws SQLException {
         Map<String, Column> columnMap = new HashMap<>();
         // 查询表字段
-        String allColumnsSql = "select * from dba_tab_columns " +
-                "where OWNER='" + dbName + "' and TABLE_NAME='" + tableName + "';";
+        String allColumnsSql = "SELECT * FROM user_tab_columns " +
+                "where TABLE_NAME='" + tableName + "'";
         ResultSet resultSet = statement.executeQuery(allColumnsSql);
         while (resultSet.next()) {
             String columnName = resultSet.getString("COLUMN_NAME");
@@ -96,6 +96,7 @@ public class DMDatabase extends DatabaseBasic{
             }
             Column column = Column.builder()
                     .columnName(columnName)
+                    .columnNameCn(columnName)
                     .columnType(columnType)
                     .propertyType(propertyType)
                     .propertyName(TransferUtil.toPropertyName(columnName))
@@ -105,19 +106,13 @@ public class DMDatabase extends DatabaseBasic{
 
         // 查询字段注释
         String allColumnsCommentSql = "select * from user_col_comments " +
-                "where OWNER='" + dbName + "' and TABLE_NAME='" + tableName + "';";
+                "where TABLE_NAME='" + tableName + "';";
         ResultSet resultSet1 = statement.executeQuery(allColumnsCommentSql);
         while (resultSet1.next()) {
             String columnName = resultSet1.getString("COLUMN_NAME");
             String comments = resultSet1.getString("COMMENTS");
-            if (comments == null || "".equals(comments)) {
-                comments = columnName;
-            }
-            Column column = columnMap.get(columnName);
-            if (column == null) {
-                column = Column.builder().columnName(columnName).columnNameCn(comments).build();
-                columnMap.put(columnName, column);
-            } else {
+            if (comments != null && !"".equals(comments.trim())) {
+                Column column = columnMap.get(columnName);
                 column.setColumnNameCn(comments);
             }
         }
