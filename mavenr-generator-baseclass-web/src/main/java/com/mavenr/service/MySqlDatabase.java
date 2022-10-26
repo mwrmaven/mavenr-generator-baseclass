@@ -90,9 +90,9 @@ public class MySqlDatabase extends DatabaseBasic{
         try {
             ResultSet resultSet = statement.executeQuery(showColumns);
             while (resultSet.next()) {
-                String columnType = resultSet.getString("Type");
+                String columnType = resultSet.getString("Type").toUpperCase();
                 if (columnType.contains("(")) {
-                    columnType = columnType.substring(0, columnType.indexOf("("));
+                    columnType = columnType.substring(0, columnType.indexOf("(")).toUpperCase();
                 }
 
                 ColumnEnum columnEnum = ColumnEnum.getColumnType(columnType);
@@ -108,6 +108,15 @@ public class MySqlDatabase extends DatabaseBasic{
                 String columnNameCn = resultSet.getString("Comment");
                 if (columnNameCn == null || "".equals(columnNameCn)) {
                     columnNameCn = columnName;
+                }
+                switch (columnType) {
+                    case "INT":
+                        columnType = "INTEGER";
+                        break;
+                    case "DATETIME":
+                        columnType = "DATE";
+                        break;
+                    default:
                 }
                 Column column = Column.builder()
                         .columnName(columnName)
