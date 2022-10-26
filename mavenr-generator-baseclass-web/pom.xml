@@ -48,10 +48,27 @@
             <groupId>com.oracle.database.nls</groupId>
             <artifactId>orai18n</artifactId>
         </dependency>
+        <!--引入本地jar包地址-->
+        <dependency>
+            <groupId>com.dameng</groupId>
+            <artifactId>dm-jdbc</artifactId>
+            <version>1.8</version>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>Generator-Tool</finalName>
+<!--        <resources>-->
+<!--            <resource>-->
+<!--                &lt;!&ndash;本地jar的目录&ndash;&gt;-->
+<!--                <directory>lib</directory>-->
+<!--                &lt;!&ndash;打包时，目标jar存放位置&ndash;&gt;-->
+<!--                <targetPath>BOOT-INF/lib/</targetPath>-->
+<!--                <includes>-->
+<!--                    <include>**/*.jar</include>-->
+<!--                </includes>-->
+<!--            </resource>-->
+<!--        </resources>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
