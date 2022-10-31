@@ -20,7 +20,8 @@ public enum JdbcTypeEnum {
     INT("int", "INTEGER", "java.lang.Integer"),
     // 数据库中的DATE类型
     DATE("date", "DATE", "java.util.Date"),
-    DATEUPPER("Date", "DATE", "java.util.Date");
+    DATEUPPER("Date", "DATE", "java.util.Date"),
+    NSTRING("String", "NVARCHAR2", "java.lang.String");
 
     /**
      * 数据库字段类型

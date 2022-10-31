@@ -5,8 +5,8 @@ import ${packagePath}.entity.${entityClassName};
 import ${packagePath}.mapper.${mapperClassName};
 import ${packagePath}.service.${serviceClassName};
 import lombok.extern.slf4j.Slf4j;
-import org.springframeword.beans.factory.annotation.Autowired;
-import org.springframeword.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 

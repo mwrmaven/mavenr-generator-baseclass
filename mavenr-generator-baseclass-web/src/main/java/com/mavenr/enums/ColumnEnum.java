@@ -26,6 +26,7 @@ public enum ColumnEnum{
     TIMESTAMP("TIMESTAMP", "Date", "java.util.Date"),
     // 数据库中的VARCHAR2类型
     VARCHAR2("VARCHAR2", "String", "java.lang.String"),
+    NVARCHAR2("NVARCHAR2", "String", "java.lang.String"),
     // 数据库中的NUMBER类型
     NUMBER("NUMBER", "Integer", "java.lang.Integer"),
     // 数据库中的tinyint类型

@@ -20,7 +20,7 @@ public interface ${className} {
      * @param ${entityClassPropertyName}
      * @return
      */
-    List<${entityClassName}> seletByModel(${entityClassName} ${entityClassPropertyName});
+    List<${entityClassName}> selectByModel(${entityClassName} ${entityClassPropertyName});
 
     /**
      * 通用--动态插入数据
