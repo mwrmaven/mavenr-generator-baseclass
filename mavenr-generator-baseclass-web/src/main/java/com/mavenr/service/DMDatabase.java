@@ -89,6 +89,9 @@ public class DMDatabase extends DatabaseBasic{
         while (resultSet.next()) {
             String columnName = resultSet.getString("COLUMN_NAME");
             String columnType = resultSet.getString("DATA_TYPE");
+            if ("VARCHAR2".equals(columnType) || columnType.startsWith("NVARCHAR")) {
+                columnType = "VARCHAR";
+            }
             ColumnEnum columnEnum = ColumnEnum.getColumnType(columnType);
             String propertyType = columnType;
             if (columnEnum != null) {
