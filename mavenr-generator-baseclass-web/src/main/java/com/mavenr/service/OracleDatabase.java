@@ -72,7 +72,7 @@ public class OracleDatabase extends DatabaseBasic{
 
     private List<Column> allColumns(Connection connection, String tableName) throws SQLException {
         // 获取oracle表的主键
-        String showColumns = "select a.COLUMN_NAME, a.DATA_TYPE, u.COMMENTS from user_col_comments u " +
+        String showColumns = "select a.COLUMN_NAME, a.DATA_TYPE, u.COMMENTS, a.DATA_SCALE from user_col_comments u " +
                 "left join all_tab_columns a on u.TABLE_NAME = a.TABLE_NAME and a.COLUMN_NAME = u.COLUMN_NAME " +
                 "where u.TABLE_NAME = '" + tableName + "'";
         List<Column> columnList = new ArrayList<>();
@@ -85,6 +85,14 @@ public class OracleDatabase extends DatabaseBasic{
                     columnType = columnType.substring(0, columnType.indexOf("("));
                 }
                 ColumnEnum columnEnum = ColumnEnum.getColumnType(columnType);
+                if ("NUMBER".equals(columnType)) {
+                    // 判断 data_scale的长度，大于0，则为小数，使用BigDecimal接收
+                    int dataScale = resultSet.getInt("DATA_SCALE");
+                    System.out.println("data_scale length is：" + dataScale);
+                    if (dataScale > 0) {
+                        columnEnum = ColumnEnum.NUMBERPLUS;
+                    }
+                }
                 String propertyType = columnType;
                 if (columnEnum != null) {
                     propertyType = columnEnum.getPropertyType();

@@ -32,7 +32,9 @@ public enum ColumnEnum{
     // 数据库中的tinyint类型
     TINYINT("TINYINT", "Integer", "java.lang.Integer"),
     // 数据库中的datetime类型
-    DATETIME("DATETIME", "Date", "java.util.Date");
+    DATETIME("DATETIME", "Date", "java.util.Date"),
+    // 数据库中的NUMBER类型
+    NUMBERPLUS("NUMBER", "BigDecimal", "java.math.BigDecimal");
 
     /**
      * 数据库字段类型
