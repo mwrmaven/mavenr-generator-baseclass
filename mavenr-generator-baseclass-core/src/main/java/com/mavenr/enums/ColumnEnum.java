@@ -32,7 +32,9 @@ public enum ColumnEnum{
     // 数据库中的datetime类型
     DATETIME("DATETIME", "Date", "java.util.Date"),
     // 数据库中的NUMBER类型
-    NUMBERPLUS("NUMBER", "BigDecimal", "java.math.BigDecimal");
+    NUMBERPLUS("NUMBER", "BigDecimal", "java.math.BigDecimal"),
+    // 数据库中的BIGDECIMAL类型
+    DECIMAL("DECIMAL", "BigDecimal", "java.math.BigDecimal");
 
 
     /**
