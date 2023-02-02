@@ -34,7 +34,9 @@ public enum ColumnEnum{
     // 数据库中的NUMBER类型
     NUMBERPLUS("NUMBER", "BigDecimal", "java.math.BigDecimal"),
     // 数据库中的BIGDECIMAL类型
-    DECIMAL("DECIMAL", "BigDecimal", "java.math.BigDecimal");
+    DECIMAL("DECIMAL", "BigDecimal", "java.math.BigDecimal"),
+    // 达梦数据库中的数据类型-----------------------------
+    NUMERIC("NUMERIC", "BigDecimal", "java.math.BigDecimal");
 
 
     /**
