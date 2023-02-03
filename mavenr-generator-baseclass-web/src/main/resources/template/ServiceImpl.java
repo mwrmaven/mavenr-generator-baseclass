@@ -29,7 +29,7 @@ public class ${className} implements ${serviceClassName}{
      * @return
      */
     @Override
-    public List<${entityClassName}> seletByModel(${entityClassName} ${entityClassPropertyName}) {
+    public List<${entityClassName}> selectByModel(${entityClassName} ${entityClassPropertyName}) {
         return ${mapperClassPropertyName}.selectByModel(${entityClassPropertyName});
     }
 
