@@ -93,6 +93,14 @@ public class DMDatabase extends DatabaseBasic{
                 columnType = "VARCHAR";
             }
             ColumnEnum columnEnum = ColumnEnum.getColumnType(columnType);
+            if ("NUMBER".equals(columnType)) {
+                // 判断 data_scale的长度，大于0，则为小数，使用BigDecimal接收
+                int dataScale = resultSet.getInt("DATA_SCALE");
+                System.out.println("data_scale length is：" + dataScale);
+                if (dataScale > 0) {
+                    columnEnum = ColumnEnum.NUMBERPLUS;
+                }
+            }
             String propertyType = columnType;
             if (columnEnum != null) {
                 propertyType = columnEnum.getPropertyType();
@@ -101,6 +109,7 @@ public class DMDatabase extends DatabaseBasic{
                     .columnName(columnName)
                     .columnNameCn(columnName)
                     .columnType(columnType)
+                    .index(resultSet.getInt("COLUMN_ID"))
                     .propertyType(propertyType)
                     .propertyName(TransferUtil.toPropertyName(columnName))
                     .build();

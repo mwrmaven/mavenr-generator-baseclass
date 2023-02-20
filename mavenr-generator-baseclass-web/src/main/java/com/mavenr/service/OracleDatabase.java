@@ -72,7 +72,7 @@ public class OracleDatabase extends DatabaseBasic{
 
     private List<Column> allColumns(Connection connection, String tableName) throws SQLException {
         // 获取oracle表的主键
-        String showColumns = "select a.COLUMN_NAME, a.DATA_TYPE, u.COMMENTS, a.DATA_SCALE from user_col_comments u " +
+        String showColumns = "select a.COLUMN_NAME, a.DATA_TYPE, u.COMMENTS, a.DATA_SCALE, a.COLUMN_ID from user_col_comments u " +
                 "left join all_tab_columns a on u.TABLE_NAME = a.TABLE_NAME and a.COLUMN_NAME = u.COLUMN_NAME " +
                 "where u.TABLE_NAME = '" + tableName + "'";
         List<Column> columnList = new ArrayList<>();
@@ -103,6 +103,7 @@ public class OracleDatabase extends DatabaseBasic{
                         .columnName(columnName)
                         .columnNameCn(resultSet.getString("COMMENTS"))
                         .columnType(columnType)
+                        .index(resultSet.getInt("COLUMN_ID"))
                         .propertyName(TransferUtil.toPropertyName(columnName))
                         .propertyType(propertyType)
                         .build();

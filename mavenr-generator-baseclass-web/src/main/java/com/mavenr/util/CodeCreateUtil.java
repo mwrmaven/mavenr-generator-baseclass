@@ -7,6 +7,7 @@ import com.mavenr.enums.ClassTypeEnum;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -60,6 +61,12 @@ public class CodeCreateUtil {
             String columnCode = temp.substring(0, temp.lastIndexOf("}"));
             // 遍历字段
             List<Column> columnList = generatorConfig.getColumnList();
+            columnList.sort(new Comparator<Column>() {
+                @Override
+                public int compare(Column o1, Column o2) {
+                    return o1.getIndex() - o2.getIndex();
+                }
+            });
             for(Column item : columnList) {
                 // 替换行代码中的参数
                 System.out.println("替换的字段信息为：" + item.toString());
@@ -158,6 +165,12 @@ public class CodeCreateUtil {
         String result = line;
         Matcher matcher = pattern.matcher(result);
         List<Column> columnList = generatorConfig.getColumnList();
+        columnList.sort(new Comparator<Column>() {
+            @Override
+            public int compare(Column o1, Column o2) {
+                return o1.getIndex() - o2.getIndex();
+            }
+        });
         List<Column> primaryKeys = columnList.stream().filter(item -> item.isPrimaryKey()).collect(Collectors.toList());
         Column columnPrimaryKey;
         if (primaryKeys.size() == 0) {

@@ -83,16 +83,13 @@ public class MySqlDatabase extends DatabaseBasic{
     }
 
     private List<Column> allColumns(Connection connection, String tableName) throws SQLException {
-        String showColumns = "show full columns from " + tableName;
+        String showColumns = "select * from information_schema.columns where TABLE_NAME = '" + tableName + "'";
         List<Column> columnList = new ArrayList<>();
         Statement statement = connection.createStatement();
         try {
             ResultSet resultSet = statement.executeQuery(showColumns);
             while (resultSet.next()) {
-                String columnType = resultSet.getString("Type").toUpperCase();
-                if (columnType.contains("(")) {
-                    columnType = columnType.substring(0, columnType.indexOf("(")).toUpperCase();
-                }
+                String columnType = resultSet.getString("DATA_TYPE").toUpperCase();
 
                 ColumnEnum columnEnum = ColumnEnum.getColumnType(columnType);
                 String propertyType = columnType;
@@ -100,11 +97,11 @@ public class MySqlDatabase extends DatabaseBasic{
                     propertyType = columnEnum.getPropertyType();
                 }
                 boolean key = false;
-                if ("PRI".equals(resultSet.getString("Key"))) {
+                if ("PRI".equals(resultSet.getString("COLUMN_KEY"))) {
                     key = true;
                 }
-                String columnName = resultSet.getString("Field");
-                String columnNameCn = resultSet.getString("Comment");
+                String columnName = resultSet.getString("COLUMN_NAME");
+                String columnNameCn = resultSet.getString("COLUMN_COMMENT");
                 if (columnNameCn == null || "".equals(columnNameCn)) {
                     columnNameCn = columnName;
                 }
@@ -121,6 +118,7 @@ public class MySqlDatabase extends DatabaseBasic{
                         .columnName(columnName)
                         .columnNameCn(columnNameCn)
                         .columnType(columnType)
+                        .index(resultSet.getInt("ORDINAL_POSITION"))
                         .propertyName(TransferUtil.toPropertyName(columnName))
                         .propertyType(propertyType)
                         .primaryKey(key)

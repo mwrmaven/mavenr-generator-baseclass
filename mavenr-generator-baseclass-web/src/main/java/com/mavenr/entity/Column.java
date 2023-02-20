@@ -21,4 +21,6 @@ public class Column{
     private String propertyType;
     // 是否主键
     private boolean primaryKey;
+    // 字段排序
+    private Integer index;
 }
