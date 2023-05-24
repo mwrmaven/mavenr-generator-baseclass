@@ -30,6 +30,7 @@ public class MySqlDatabase extends DatabaseBasic{
     public List<Table> columns(BaseConfig baseConfig) throws SQLException {
         // 数据库表名，多个表名使用英文逗号分隔（如果为空，则表示遍历所有表）
         String tableNames = baseConfig.getTableNames();
+        String dbName = baseConfig.getName();
         // 是否扫描数据库中所有的表
         boolean scanAllTables = null == tableNames || "".equals(tableNames) || "".equals(tableNames.trim());
 
@@ -62,6 +63,7 @@ public class MySqlDatabase extends DatabaseBasic{
                     Table table = Table.builder()
                             .tableName(item)
                             .columns(columns)
+                            .owner(dbName)
                             .build();
                     String createSql = resultSet1.getString(2);
                     int index = createSql.indexOf("COMMENT=");

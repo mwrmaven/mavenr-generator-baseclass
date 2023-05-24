@@ -82,6 +82,9 @@ public class TransferUtil {
                 case "${tableName}":
                     result = result.replace("${tableName}", generatorConfig.getTableName());
                     break;
+                case "${tableNameCn}":
+                    result = result.replace("${tableNameCn}", generatorConfig.getTableNameCn());
+                    break;
                 case "${className}":
                     result = result.replace("${className}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + classType);
                     break;
@@ -93,6 +96,9 @@ public class TransferUtil {
                     break;
                 case "${columnType}":
                     result = result.replace("${columnType}", column.getColumnType());
+                    break;
+                case "${jdbcType}":
+                    result = result.replace("${jdbcType}", column.getJdbcType());
                     break;
                 case "${createTime}":
                     result = result.replace("${createTime}", sdf.format(new Date()));

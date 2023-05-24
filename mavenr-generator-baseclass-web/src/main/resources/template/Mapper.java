@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author
  * @Classname ${className}
- * @Description TODO
+ * @Description ${tableNameCn}
  * @Date ${createTime}
  */
 @Mapper

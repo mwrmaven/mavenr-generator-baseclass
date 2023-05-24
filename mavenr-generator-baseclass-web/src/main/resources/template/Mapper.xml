@@ -3,7 +3,7 @@
 <mapper namespace="${packagePath}.mapper.${mapperClassName}">
 
     <sql id="TableName">
-        ${dbName}.${tableName}
+        ${owner}.${tableName}
     </sql>
 
     <sql id="All_Columns">
@@ -17,7 +17,7 @@
             <if test="${propertyName} != null">${columnName},</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="${propertyName} != null">#{${propertyName}, jdbcType=${columnType}},</if>
+            <if test="${propertyName} != null">#{${propertyName}, jdbcType=${jdbcType}},</if>
         </trim>
     </insert>
 
@@ -27,7 +27,7 @@
         SELECT a.* FROM (
         <foreach collection="list" item="item" index="index" separator="union all">
             SELECT
-                #{item.${propertyName}, jdbcType=${columnType}}${comma}
+                #{item.${propertyName}, jdbcType=${jdbcType}}${comma}
             FROM dual
         </foreach>
         ) a
@@ -37,7 +37,7 @@
     <select id="selectByModel" parameterType="${packagePath}.entity.${entityClassName}" resultType="${packagePath}.entity.${entityClassName}">
         SELECT <include refid="All_Columns"/> FROM <include refid="TableName"/>
         <where>
-            <if test="${propertyName} != null">and ${columnName} = #{${propertyName}, jdbcType=${columnType}}</if>
+            <if test="${propertyName} != null">and ${columnName} = #{${propertyName}, jdbcType=${jdbcType}}</if>
         </where>
     </select>
 
@@ -45,9 +45,9 @@
     <update id="updateByPrimaryKeySelective" parameterType="${packagePath}.entity.${entityClassName}">
         UPDATE <include refid="TableName"/>
         <set>
-            <if test="${propertyName} != null">${columnName} = #{${propertyName}, jdbcType=${columnType}},</if>
+            <if test="${propertyName} != null">${columnName} = #{${propertyName}, jdbcType=${jdbcType}},</if>
         </set>
-        WHERE ${primaryKeyColumn} = #{${primaryKeyProperty}, jdbcType=${primaryKeyType}}
+        WHERE ${primaryKeyColumn} = #{${primaryKeyProperty}, jdbcType=${jdbcType}}
     </update>
 </mapper>
 

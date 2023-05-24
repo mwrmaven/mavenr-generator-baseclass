@@ -11,7 +11,7 @@ import java.lang.Integer;
 /**
  * @author
  * @Classname ${className}
- * @Description TODO
+ * @Description ${tableNameCn}
  * @Date ${createTime}
  */
 @Data

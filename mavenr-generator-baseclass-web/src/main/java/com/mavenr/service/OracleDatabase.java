@@ -4,6 +4,7 @@ import com.mavenr.entity.BaseConfig;
 import com.mavenr.entity.Column;
 import com.mavenr.entity.Table;
 import com.mavenr.enums.ColumnEnum;
+import com.mavenr.enums.JdbcTypeEnum;
 import com.mavenr.util.TransferUtil;
 
 import java.sql.Connection;
@@ -13,6 +14,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -31,25 +33,31 @@ public class OracleDatabase extends DatabaseBasic{
 
         Statement statement = connection.createStatement();
         // 表信息集合
+        List<Table> allTableList = new ArrayList<>();
         List<Table> tableList = new ArrayList<>();
+        String showTablesSql = "select u.*, a.OWNER from USER_TAB_COMMENTS u " +
+                               "left join ALL_TABLES a on u.TABLE_NAME = a.TABLE_NAME " +
+                               "where TABLE_TYPE = 'TABLE'";
+        ResultSet resultSet = statement.executeQuery(showTablesSql);
+        while (resultSet.next()) {
+            Table table = Table.builder()
+                    .tableName(resultSet.getString("TABLE_NAME"))
+                    .tableNameCn(resultSet.getString("COMMENTS"))
+                    .owner(resultSet.getString("OWNER"))
+                    .build();
+            allTableList.add(table);
+        }
+        Map<String, Table> map = allTableList.stream().collect(Collectors.toMap(Table::getTableName, item -> item, (a, b) -> b));
         if (scanAllTables) {
-            String showTablesSql = "select * from USER_TAB_COMMENTS where TABLE_TYPE = 'TABLE'";
-            ResultSet resultSet = statement.executeQuery(showTablesSql);
-            while (resultSet.next()) {
-                Table table = Table.builder()
-                        .tableName(resultSet.getString("TABLE_NAME"))
-                        .tableNameCn(resultSet.getString("COMMENTS"))
-                        .build();
-                tableList.add(table);
-            }
+            tableList = allTableList;
         } else {
             // 获取配置文件中的表名（英文逗号分隔）
             String[] split = tableNames.split(",");
             for (String t : split) {
-                Table table = Table.builder()
-                        .tableName(t)
-                        .build();
-                tableList.add(table);
+                Table table = map.get(t.toUpperCase());
+                if (table != null) {
+                    tableList.add(table);
+                }
             }
         }
         System.out.println("查询的表名为："
@@ -97,8 +105,14 @@ public class OracleDatabase extends DatabaseBasic{
                 if (columnEnum != null) {
                     propertyType = columnEnum.getPropertyType();
                 }
+                String jdbcType = columnType;
+                JdbcTypeEnum jdbcTypeEnum = JdbcTypeEnum.getByColumnType(columnType);
+                if (jdbcTypeEnum != null) {
+                    jdbcType = jdbcTypeEnum.getJdbcType();
+                }
 
                 String columnName = resultSet.getString("COLUMN_NAME");
+                System.out.println("字段下标：" + resultSet.getInt("COLUMN_ID"));
                 Column column = Column.builder()
                         .columnName(columnName)
                         .columnNameCn(resultSet.getString("COMMENTS"))
@@ -106,6 +120,7 @@ public class OracleDatabase extends DatabaseBasic{
                         .index(resultSet.getInt("COLUMN_ID"))
                         .propertyName(TransferUtil.toPropertyName(columnName))
                         .propertyType(propertyType)
+                        .jdbcType(jdbcType)
                         .build();
                 columnList.add(column);
             }

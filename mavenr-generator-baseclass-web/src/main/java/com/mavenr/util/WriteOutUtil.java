@@ -5,10 +5,7 @@ import com.mavenr.generator.impl.*;
 import com.mavenr.service.OutputInterface;
 import com.mavenr.systemenum.Charset;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -53,93 +50,118 @@ public class WriteOutUtil {
                         .tableNameCn(tableNameCn)
                         .dbName(dbName)
                         .columnList(columns)
+                        .owner(item.getOwner())
                         .build();
+                if (item.getOwner() == null || "".equals(item.getOwner().trim())) {
+                    generatorConfig.setOwner(dbName);
+                }
 
                 try {
                     BufferedReader br = null;
 
                     String entityPath = baseConfig.getEntityPath();
                     if (entityPath != null) {
+                        InputStream is;
                         if ("".equals(entityPath)) {
-                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Entity.java"), Charset.UTF_8.getType()));
+                            is = ClassLoader.getSystemResourceAsStream("template/Entity.java");
                         } else {
-                            br = new BufferedReader(new InputStreamReader(new FileInputStream(entityPath), Charset.UTF_8.getType()));
+                            is = new FileInputStream(entityPath);
                         }
+                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
                         generatorConfig.setBr(br);
                         ClassInfo entity = new EntityGenerator().create(generatorConfig);
                         outputInterface.push(entity.getCode(), entity.getFileName(), outPath);
+                        is.close();
                     }
 
                     String voPath = baseConfig.getVoPath();
                     if (voPath != null) {
+                        InputStream is;
                         if ("".equals(voPath)) {
-                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/VO.java"), Charset.UTF_8.getType()));
+                            is = ClassLoader.getSystemResourceAsStream("template/VO.java");
                         } else {
-                            br = new BufferedReader(new InputStreamReader(new FileInputStream(voPath), Charset.UTF_8.getType()));
+                            is = new FileInputStream(voPath);
                         }
+                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
                         generatorConfig.setBr(br);
                         ClassInfo vo = new VOGenerator().create(generatorConfig);
                         outputInterface.push(vo.getCode(), vo.getFileName(), outPath);
+                        is.close();
                     }
 
                     String boPath = baseConfig.getBoPath();
                     if (boPath != null) {
+                        InputStream is;
                         if ("".equals(boPath)) {
-                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/BO.java"), Charset.UTF_8.getType()));
+                            is = ClassLoader.getSystemResourceAsStream("template/BO.java");
                         } else {
-                            br = new BufferedReader(new InputStreamReader(new FileInputStream(boPath), Charset.UTF_8.getType()));
+                            is = new FileInputStream(boPath);
                         }
+                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
                         generatorConfig.setBr(br);
                         ClassInfo bo = new BOGenerator().create(generatorConfig);
                         outputInterface.push(bo.getCode(), bo.getFileName(), outPath);
+
                     }
 
                     String mapperPath = baseConfig.getMapperPath();
                     if (mapperPath != null) {
+                        InputStream is;
                         if ("".equals(mapperPath)) {
-                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Mapper.java"), Charset.UTF_8.getType()));
+                            is = ClassLoader.getSystemResourceAsStream("template/Mapper.java");
                         } else {
-                            br = new BufferedReader(new InputStreamReader(new FileInputStream(mapperPath), Charset.UTF_8.getType()));
+                            is = new FileInputStream(mapperPath);
                         }
+                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
                         generatorConfig.setBr(br);
                         ClassInfo mapper = new MapperGenerator().create(generatorConfig);
                         outputInterface.push(mapper.getCode(), mapper.getFileName(), outPath);
+                        is.close();
                     }
 
                     String mapperXmlPath = baseConfig.getMapperXmlPath();
                     if (mapperXmlPath != null) {
+                        InputStream is;
                         if ("".equals(mapperXmlPath)) {
-                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Mapper.xml"), Charset.UTF_8.getType()));
+                            is = ClassLoader.getSystemResourceAsStream("template/Mapper.xml");
                         } else {
-                            br = new BufferedReader(new InputStreamReader(new FileInputStream(mapperXmlPath), Charset.UTF_8.getType()));
+                            is = new FileInputStream(mapperXmlPath);
                         }
+                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
                         generatorConfig.setBr(br);
                         ClassInfo mapperXml = new MapperXmlGenerator().create(generatorConfig);
                         outputInterface.push(mapperXml.getCode(), mapperXml.getFileName(), outPath);
+                        is.close();
                     }
 
                     String servicePath = baseConfig.getServicePath();
                     if (servicePath != null) {
+                        InputStream is;
                         if ("".equals(servicePath)) {
-                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/Service.java"), Charset.UTF_8.getType()));
+                            is = ClassLoader.getSystemResourceAsStream("template/Service.java");
                         } else {
-                            br = new BufferedReader(new InputStreamReader(new FileInputStream(servicePath), Charset.UTF_8.getType()));
+                            is = new FileInputStream(servicePath);
                         }
+                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
                         generatorConfig.setBr(br);
                         ClassInfo service = new ServiceGenerator().create(generatorConfig);
                         outputInterface.push(service.getCode(), service.getFileName(), outPath);
+                        is.close();
                     }
 
                     String serviceImplPath = baseConfig.getServiceImplPath();
                     if (serviceImplPath != null) {
+                        InputStream is;
                         if ("".equals(serviceImplPath)) {
-                            br = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("template/ServiceImpl.java"), Charset.UTF_8.getType()));
+                            is = ClassLoader.getSystemResourceAsStream("template/ServiceImpl.java");
                         } else {
-                            br = new BufferedReader(new InputStreamReader(new FileInputStream(serviceImplPath), Charset.UTF_8.getType()));
+                            is = new FileInputStream(serviceImplPath);
                         }
+                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
                         generatorConfig.setBr(br);
                         ClassInfo serviceImpl = new ServiceImplGenerator().create(generatorConfig);
                         outputInterface.push(serviceImpl.getCode(), serviceImpl.getFileName(), outPath);
+                        is.close();
                     }
 
                 } catch (Exception e) {

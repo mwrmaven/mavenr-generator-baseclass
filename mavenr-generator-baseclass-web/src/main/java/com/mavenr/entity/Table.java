@@ -19,4 +19,5 @@ public class Table {
     private String tableName;
     private String tableNameCn;
     private List<Column> columns;
+    private String owner;
 }

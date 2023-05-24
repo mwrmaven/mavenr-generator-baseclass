@@ -19,6 +19,7 @@ public class Column{
     private String columnType;
     private String propertyName;
     private String propertyType;
+    private String jdbcType;
     // 是否主键
     private boolean primaryKey;
     // 字段排序

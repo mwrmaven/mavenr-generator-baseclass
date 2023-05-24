@@ -178,6 +178,7 @@ public class CodeCreateUtil {
             columnPrimaryKey.setColumnName("ID");
             columnPrimaryKey.setPropertyName("id");
             columnPrimaryKey.setColumnType("VARCHAR");
+            columnPrimaryKey.setJdbcType("VARCHAR");
         } else {
             columnPrimaryKey = primaryKeys.get(0);
         }
@@ -187,8 +188,9 @@ public class CodeCreateUtil {
             String param = matcher.group();
             if ("${mapperClassName}".equals(param) || "${entityClassName}".equals(param)
                     || "${packagePath}".equals(param) || "${tableName}".equals(param)
+                    || "${tableNameCn}".equals(param)
                     || "${columns}".equals(param) || line.trim().startsWith("WHERE ")
-                    || "${primaryKeyType}".equals(param) || "${dbName}".equals(param)) {
+                    || "${primaryKeyType}".equals(param) || "${dbName}".equals(param) || "${owner}".equals(param)) {
                 matcher = pattern.matcher(result);
                 while (matcher.find()) {
                     param = matcher.group();
@@ -196,6 +198,9 @@ public class CodeCreateUtil {
                     switch (param) {
                         case "${tableName}":
                             result = result.replace("${tableName}", generatorConfig.getTableName());
+                            break;
+                        case "${tableNameCn}":
+                            result = result.replace("${tableNameCn}", generatorConfig.getTableNameCn());
                             break;
                         case "${primaryKeyColumn}":
                             result = result.replace("${primaryKeyColumn}", columnPrimaryKey.getColumnName());
@@ -221,6 +226,12 @@ public class CodeCreateUtil {
                         case "${dbName}":
                             result = result.replace("${dbName}", generatorConfig.getDbName());
                             break;
+                        case "${owner}":
+                            result = result.replace("${owner}", generatorConfig.getOwner());
+                            break;
+                        case "${jdbcType}":
+                            result = result.replace("${jdbcType}", columnPrimaryKey.getJdbcType());
+                            break;
                         default:
                     }
                 }
@@ -244,6 +255,9 @@ public class CodeCreateUtil {
                                 break;
                             case "${columnType}":
                                 temp = temp.replace("${columnType}", column.getColumnType());
+                                break;
+                            case "${jdbcType}":
+                                temp = temp.replace("${jdbcType}", column.getJdbcType());
                                 break;
                             case "${comma}":
                                 temp = temp.replace("${comma}", ",");

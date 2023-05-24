@@ -80,7 +80,6 @@ public class NodeCreateUtil {
         // 输入框
         TextField tf = new TextField();
         tf.setPrefWidth(400);
-        tf.setDisable(true);
         tf.setStyle("-fx-border-color: black; -fx-border-radius: 20; -fx-background-radius: 20");
         tf.setPromptText("不勾选则不生成数据；不选择，则按默认格式生成数据");
         if (text != null && !"".equals(text.trim())) {

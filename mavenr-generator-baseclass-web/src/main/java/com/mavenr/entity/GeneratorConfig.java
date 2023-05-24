@@ -26,4 +26,5 @@ public class GeneratorConfig {
     private String tableNameCn;
     private String dbName;
     private List<Column> columnList;
+    private String owner;
 }

@@ -13,15 +13,13 @@ import lombok.Getter;
 @Getter
 public enum JdbcTypeEnum {
     // 数据库中的VARCHAR类型
-    STRING("String", "VARCHAR", "java.lang.String"),
-    // 数据库中的INTEGER类型
-    INTEGER("Integer", "INTEGER", "java.lang.Integer"),
-    // 数据库中的INT类型
-    INT("int", "INTEGER", "java.lang.Integer"),
+    STRING("VARCHAR2", "VARCHAR", "java.lang.String"),
     // 数据库中的DATE类型
-    DATE("date", "DATE", "java.util.Date"),
-    DATEUPPER("Date", "DATE", "java.util.Date"),
-    NSTRING("String", "NVARCHAR2", "java.lang.String");
+    DATE("DATE", "DATE", "java.util.Date"),
+    NUMBER("NUMBER", "NUMERIC", "java.math.BigDecimal"),
+    // 数据库中的TIMESTAMP类型
+    TIMESTAMP("TIMESTAMP", "TIMESTAMP", "java.util.Date");
+
 
     /**
      * 数据库字段类型
