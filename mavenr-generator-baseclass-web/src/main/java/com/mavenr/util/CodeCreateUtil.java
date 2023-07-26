@@ -6,10 +6,7 @@ import com.mavenr.entity.GeneratorConfig;
 import com.mavenr.enums.ClassTypeEnum;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -67,12 +64,57 @@ public class CodeCreateUtil {
                     return o1.getIndex() - o2.getIndex();
                 }
             });
+            int idPreIndex = -1;
             for(Column item : columnList) {
+                // 导入类跳过系统字段
+                String ignore = "ETL_DT,ID,DATA_STATUS,VERSION,CREATE_TIME,CREATOR,REPORT_INSTANCE_ID,TASK_INSTANCE_ID";
+                String[] is = ignore.split(",");
+                List<String> isList = Arrays.asList(is);
+                if (isList.contains(item.getColumnName())) {
+                    continue;
+                }
                 // 替换行代码中的参数
                 System.out.println("替换的字段信息为：" + item.toString());
                 String result = TransferUtil.replaceParamToValue(classType, columnCode, generatorConfig, item);
+                idPreIndex = item.getIndex();
                 code.append(result);
             }
+
+            // 在导入类文件中追加
+            String endAppend = "    @SubmitReportColumn(fieldName = \"ID\", fieldChineseName = \"主键id\", fieldType = FieldType.VARCHAR, isBizPrimaryKey = true, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.NULL_INIT_UUID, columnIndex = " + (idPreIndex + 1 + 1) + ")\n" +
+                    "    private String id;\n" +
+                    "\n" +
+                    "    @ExcelIgnore\n" +
+                    "    @SubmitReportColumn(fieldName = \"DATA_STATUS\", fieldChineseName = \"数据有效状态\", fieldType = FieldType.NUMBER, isDataField = false, fieldValueWay = FieldValueWay.UPDATEDATA, updatePre = \"0\", data = \"1\")\n" +
+                    "    String dataStatus;\n" +
+                    "\n" +
+                    "    @ExcelIgnore\n" +
+                    "    @SubmitReportColumn(fieldName = \"VERSION\", fieldChineseName = \"版本\", fieldType = FieldType.NUMBER, isDataField = false, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.VERSION, insertVersion = true)\n" +
+                    "    String version;\n" +
+                    "\n" +
+                    "    @ExcelIgnore\n" +
+                    "    @SubmitReportColumn(fieldName = \"CREATE_TIME\", fieldChineseName = \"创建时间\", isDataField = false, isRecordOpeTime = true, fieldType = FieldType.TIMESTAMP, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.TIME_TIMESTAMP, isCreateTime = true)\n" +
+                    "    String createTime;\n" +
+                    "\n" +
+                    "    @ExcelIgnore\n" +
+                    "    @SubmitReportColumn(fieldName = \"CREATOR\", fieldChineseName = \"创建人\", isDataField = false, fieldType = FieldType.VARCHAR, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.USER_CODE)\n" +
+                    "    String creator;\n" +
+                    "\n" +
+                    "    @ExcelIgnore\n" +
+                    "    @SubmitReportColumn(fieldName = \"REPORT_INSTANCE_ID\", fieldChineseName = \"报表实例ID\", fieldType = FieldType.VARCHAR, isDataField = false, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.REPORT_INSTANCE_ID)\n" +
+                    "    String reportInstanceId;\n" +
+                    "\n" +
+                    "    @ExcelIgnore\n" +
+                    "    @SubmitReportColumn(fieldName = \"TASK_INSTANCE_ID\", fieldChineseName = \"任务实例ID\", fieldType = FieldType.VARCHAR, isDataField = false, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.TASK_INSTANCE_ID)\n" +
+                    "    String taskInstanceId;\n";
+
+            String exportEndAppend = "    /**\n" +
+                    "     * id\n" +
+                    "     */\n" +
+                    "    @SubmitReportColumn(fieldName = \"ID\", fieldChineseName = \"主键id\", fieldType = FieldType.VARCHAR)\n" +
+                    "    private String id;";
+            code.append(exportEndAppend);
+
             code.append("\n}");
         } catch (Exception e) {
             System.out.println("解析模板文件出错！" + e.getMessage());

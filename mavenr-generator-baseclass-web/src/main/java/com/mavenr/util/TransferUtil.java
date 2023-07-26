@@ -88,6 +88,9 @@ public class TransferUtil {
                 case "${className}":
                     result = result.replace("${className}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + classType);
                     break;
+                case "${exportClassName}":
+                    result = result.replace("${exportClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + "Export" + classType);
+                    break;
                 case "${columnComments}":
                     result = result.replace("${columnComments}", column.getColumnNameCn());
                     break;
@@ -126,6 +129,12 @@ public class TransferUtil {
                     break;
                 case "${columns}":
                     result = result.replace("${columns}", generatorConfig.getColumnList().stream().map(Column::getColumnName).collect(Collectors.joining(", ")));
+                    break;
+                case "${importColumnIndex}":
+                    result = result.replace("${importColumnIndex}", String.valueOf(column.getIndex() + 1));
+                    break;
+                case "${exportColumnIndex}":
+                    result = result.replace("${exportColumnIndex}", String.valueOf(column.getIndex()));
                     break;
                 default:
             }

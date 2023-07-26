@@ -81,11 +81,26 @@ public class DatabaseConfig {
         HBox databaseType = databaseType(paramType);
         HBox databasePath = nodeCreateUtil.createLabelAndTextField("请输入数据库地址：", paramPath, "databasePath");
         HBox databasePort = nodeCreateUtil.createLabelAndTextField("请输入端口号：", paramPort, "databasePort");
+        HBox first = new HBox();
+        first.setSpacing(10);
+        first.setAlignment(Pos.CENTER_LEFT);
+        first.getChildren().addAll(databaseType, databasePath, databasePort);
+
         HBox databaseName = nodeCreateUtil.createLabelAndTextField("请输入数据库名称：", paramName, "databaseName");
         HBox databaseUser = nodeCreateUtil.createLabelAndTextField("请输入数据库账号：", paramUser, "databaseUser");
         HBox databasePwd = nodeCreateUtil.createLabelAndTextField("请输入数据库密码：", paramPwd, "databasePwd");
+        HBox second = new HBox();
+        second.setSpacing(10);
+        second.setAlignment(Pos.CENTER_LEFT);
+        second.getChildren().addAll(databaseName, databaseUser, databasePwd);
+
         HBox databaseTableName = nodeCreateUtil.createLabelAndTextField("请输入表名（不写则遍历所有表；多个表名以,分隔）：", paramTableName, "databaseTableName");
         HBox packageBasePath = nodeCreateUtil.createLabelAndTextField("请输入包的基础路径：", paramPackageBasePath, "packageBasePath");
+        HBox third = new HBox();
+        third.setSpacing(10);
+        third.setAlignment(Pos.CENTER_LEFT);
+        third.getChildren().addAll(databaseTableName, packageBasePath);
+
         HBox entityChooser = nodeCreateUtil.createLabelAndFileChooser("请选择entity类模板文件：", "template/Entity.java", paramEntity, booleanEntity, "entityChooser", "isEntity");
         HBox voChooser = nodeCreateUtil.createLabelAndFileChooser("请选择vo类模板文件：", "template/VO.java", paramVo, booleanVo, "voChooser", "isVo");
         HBox mapperChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapper类模板文件：", "template/Mapper.java", paramMapper, booleanMapper, "mapperChooser", "isMapper");
@@ -104,14 +119,24 @@ public class DatabaseConfig {
         bottomHbox.setAlignment(Pos.CENTER_LEFT);
         bottomHbox.getChildren().addAll(executeButton, resultPath);
 
-        root.getChildren().addAll(databaseType,
-                databasePath,
-                databasePort,
-                databaseName,
-                databaseUser,
-                databasePwd,
-                databaseTableName,
-                packageBasePath,
+//        root.getChildren().addAll(databaseType,
+//                databasePath,
+//                databasePort,
+//                databaseName,
+//                databaseUser,
+//                databasePwd,
+//                databaseTableName,
+//                packageBasePath,
+//                entityChooser,
+//                voChooser,
+//                mapperChooser,
+//                mapperXmlChooser,
+//                serviceChooser,
+//                serviceImplChooser,
+//                boChooser,
+//                bottomHbox);
+
+        root.getChildren().addAll(first, second, third,
                 entityChooser,
                 voChooser,
                 mapperChooser,

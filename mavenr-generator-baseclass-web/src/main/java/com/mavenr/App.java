@@ -41,16 +41,16 @@ public class App extends Application {
         double maxWidth = visualBounds.getWidth();
         double maxHeight = visualBounds.getHeight();
 
-        double standardWidth = maxWidth / 2;
-        double standardHeight = maxHeight / 2;
+        double standardWidth = maxWidth * 2 / 3;
+        double standardHeight = maxHeight * 2 / 3;
 
         // 配置窗体
         stage.setScene(scene);
         stage.setTitle("根据数据库表生成增删改查类");
         stage.setWidth(standardWidth);
-        stage.setHeight(standardHeight + 100);
+        stage.setHeight(standardHeight);
         stage.setMinWidth(standardWidth);
-        stage.setMinHeight(standardHeight + 100);
+        stage.setMinHeight(standardHeight);
 //        stage.setMaxWidth(standardWidth);
 //        stage.setMaxHeight(standardHeight + 100);
         stage.show();

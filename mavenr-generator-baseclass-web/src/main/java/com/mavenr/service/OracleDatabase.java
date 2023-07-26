@@ -101,6 +101,9 @@ public class OracleDatabase extends DatabaseBasic{
                         columnEnum = ColumnEnum.NUMBERPLUS;
                     }
                 }
+                if ("VARCHAR2".equals(columnType)) {
+                    columnType = "VARCHAR";
+                }
                 String propertyType = columnType;
                 if (columnEnum != null) {
                     propertyType = columnEnum.getPropertyType();
