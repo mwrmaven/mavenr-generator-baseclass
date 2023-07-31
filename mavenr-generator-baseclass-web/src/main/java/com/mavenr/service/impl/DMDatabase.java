@@ -1,9 +1,10 @@
-package com.mavenr.service;
+package com.mavenr.service.impl;
 
 import com.mavenr.entity.BaseConfig;
 import com.mavenr.entity.Column;
 import com.mavenr.entity.Table;
 import com.mavenr.enums.ColumnEnum;
+import com.mavenr.enums.JdbcTypeEnum;
 import com.mavenr.util.TransferUtil;
 
 import java.sql.ResultSet;
@@ -58,15 +59,11 @@ public class DMDatabase extends DatabaseBasic{
         System.out.println("查询的表名为：" + Arrays.toString(tableList.stream().map(Table::getTableName).collect(Collectors.toList()).toArray()));
 
         // 遍历表名，获取表信息
-        tableList.forEach(item -> {
+        for (Table item : tableList) {
             List<Column> columns = null;
-            try {
-                columns = allColumns(statement, item.getTableName());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            columns = allColumns(statement, item.getTableName());
             item.setColumns(columns);
-        });
+        }
         // 关闭连接
         statement.close();
         close();
@@ -104,6 +101,14 @@ public class DMDatabase extends DatabaseBasic{
             if (columnEnum != null) {
                 propertyType = columnEnum.getPropertyType();
             }
+
+            // 解析jdbc的type
+            String jdbcType = columnType;
+            JdbcTypeEnum jdbcTypeEnum = JdbcTypeEnum.getByColumnType(columnType);
+            if (jdbcTypeEnum != null) {
+                jdbcType = jdbcTypeEnum.getJdbcType();
+            }
+
             Column column = Column.builder()
                     .columnName(columnName)
                     .columnNameCn(columnName)
@@ -111,6 +116,7 @@ public class DMDatabase extends DatabaseBasic{
                     .index(resultSet.getInt("COLUMN_ID"))
                     .propertyType(propertyType)
                     .propertyName(TransferUtil.toPropertyName(columnName))
+                    .jdbcType(jdbcType)
                     .build();
             columnMap.put(columnName, column);
         }

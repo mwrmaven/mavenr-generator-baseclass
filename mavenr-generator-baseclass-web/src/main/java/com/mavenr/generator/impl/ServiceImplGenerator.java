@@ -2,7 +2,7 @@ package com.mavenr.generator.impl;
 
 import com.mavenr.entity.ClassInfo;
 import com.mavenr.entity.GeneratorConfig;
-import com.mavenr.enums.ClassTypeEnum;
+import com.mavenr.systemenum.ClassTypeEnum;
 import com.mavenr.generator.ClassGeneratorInterface;
 import com.mavenr.util.CodeCreateUtil;
 
@@ -14,7 +14,7 @@ import com.mavenr.util.CodeCreateUtil;
  */
 public class ServiceImplGenerator implements ClassGeneratorInterface {
     @Override
-    public ClassInfo create(GeneratorConfig generatorConfig) {
-        return CodeCreateUtil.createMapper(generatorConfig, ClassTypeEnum.SERVICEIMPL.getClassType());
+    public ClassInfo create(GeneratorConfig generatorConfig) throws Exception {
+        return CodeCreateUtil.createServiceImpl(generatorConfig, ClassTypeEnum.SERVICEIMPL.getClassType());
     }
 }

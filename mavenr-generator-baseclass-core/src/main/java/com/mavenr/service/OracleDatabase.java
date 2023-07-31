@@ -55,15 +55,17 @@ public class OracleDatabase extends DatabaseBasic{
         }
         System.out.println("查询的表名为："
                 + Arrays.toString(tableList.stream().map(Table::getTableName).collect(Collectors.toList()).toArray()));
-        tableList.forEach(item -> {
+        for (Table item : tableList) {
             List<Column> columns = null;
             try {
                 columns = allColumns(connection, item.getTableName());
             } catch (SQLException e) {
-                e.printStackTrace();
+                String msg = "查询表字段出错！";
+                System.out.println(msg + e.getMessage());
+                throw new Exception(msg);
             }
             item.setColumns(columns);
-        });
+        }
 
         // 关闭连接
         statement.close();

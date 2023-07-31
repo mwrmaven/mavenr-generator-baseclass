@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="${packagePath}.mapper.${mapperClassName}">
+<mapper namespace="${mapperClassPath}">
 
     <sql id="TableName">
         ${owner}.${tableName}
@@ -11,7 +11,7 @@
     </sql>
 
     <!-- 通用-动态插入数据 -->
-    <insert id="insertSelective" parameterType="${packagePath}.entity.${entityClassName}">
+    <insert id="insertSelective" parameterType="${entityClassPath}">
         INSERT INTO <include refid="TableName"/>
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="${propertyName} != null">${columnName},</if>
@@ -34,7 +34,7 @@
     </insert>
 
     <!-- 通用-动态查询数据 -->
-    <select id="selectByModel" parameterType="${packagePath}.entity.${entityClassName}" resultType="${packagePath}.entity.${entityClassName}">
+    <select id="selectByModel" parameterType="${entityClassPath}" resultType="${entityClassPath}">
         SELECT <include refid="All_Columns"/> FROM <include refid="TableName"/>
         <where>
             <if test="${propertyName} != null">and ${columnName} = #{${propertyName}, jdbcType=${jdbcType}}</if>
@@ -42,12 +42,12 @@
     </select>
 
     <!-- 通用-配置动态更新数据-根据主键更新 -->
-    <update id="updateByPrimaryKeySelective" parameterType="${packagePath}.entity.${entityClassName}">
+    <update id="updateByPrimaryKeySelective" parameterType="${entityClassPath}">
         UPDATE <include refid="TableName"/>
         <set>
             <if test="${propertyName} != null">${columnName} = #{${propertyName}, jdbcType=${jdbcType}},</if>
         </set>
-        WHERE ${primaryKeyColumn} = #{${primaryKeyProperty}, jdbcType=${jdbcType}}
+        WHERE ${primaryKeyColumn} = #{${primaryKeyProperty}, jdbcType=${primaryKeyType}}
     </update>
 </mapper>
 

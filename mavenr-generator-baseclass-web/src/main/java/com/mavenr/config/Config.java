@@ -22,7 +22,7 @@ public class Config {
     /**
      * 读取配置文件
      */
-    public static void createProperties() {
+    public static void createProperties() throws Exception {
         // 加载配置文件
         properties = new Properties();
 
@@ -30,13 +30,15 @@ public class Config {
             try {
                 configFile.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw e;
             }
         }
         try {
             properties.load(new FileInputStream(configFile));
         } catch (IOException e) {
-            e.printStackTrace();
+            String msg = "配置文件加载失败！";
+            System.out.println(msg + e.getMessage());
+            throw e;
         }
     }
 
@@ -54,12 +56,14 @@ public class Config {
      * @param key
      * @param value
      */
-    public static void set(String key, String value) {
+    public static void set(String key, String value) throws Exception {
         properties.setProperty(key, value);
         try {
             properties.store(new FileOutputStream(configFile), "重写"+key+"参数");
         } catch (IOException e) {
-            System.out.println("未读取到配置文件！");
+            String msg = "未读取到配置文件！";
+            System.out.println(msg);
+            throw e;
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.mavenr.enums;
+package com.mavenr.systemenum;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.mavenr.enums;
+package com.mavenr.systemenum;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,27 +6,20 @@ import lombok.Getter;
 /**
  * @author mavenr
  * @Classname DatabaseTypeEnum
- * @Description 数据库类型枚举类
- * @Date 2020/10/16 11:32 下午
+ * @Description 数据库类型
+ * @Date 2022/8/17 14:15
  */
 @AllArgsConstructor
 @Getter
 public enum DatabaseTypeEnum {
-    // oracle数据库
-    ORACLE("ORACLE", 1),
-    // mysql数据库
-    MYSQL("MYSQL", 2),
-    // dm数据库
-    DMDB("DMDB", 3);
 
-    /**
-     * 数据库的类型
-     */
+    ORACLE(1, "ORACLE"),
+    MYSQL(2, "MYSQL"),
+    DMDB(3, "DMDB");
+
+    private int id;
+
     private String type;
-    /**
-     * 类型对应的值
-     */
-    private Integer code;
 
     public static DatabaseTypeEnum getType(String type) {
         DatabaseTypeEnum[] databaseTypeEnums = DatabaseTypeEnum.values();

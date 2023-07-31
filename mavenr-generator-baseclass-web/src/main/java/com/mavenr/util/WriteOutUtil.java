@@ -21,9 +21,7 @@ public class WriteOutUtil {
      * @param outputInterface 输出接口
      * @param baseConfig 参数信息
      */
-    public static void write(List<Table> tableList, OutputInterface outputInterface, BaseConfig baseConfig) {
-        // 包路径
-        String packagePath = baseConfig.getPackageBasePath();
+    public static void write(List<Table> tableList, OutputInterface outputInterface, BaseConfig baseConfig) throws Exception {
         // 文件输出路径
         String outPath = baseConfig.getOutPath();
         File file = new File(outPath);
@@ -32,9 +30,11 @@ public class WriteOutUtil {
             file.mkdirs();
         }
 
-        // 数据库类型
-        String type = baseConfig.getType();
-        tableList.forEach(item -> {
+        // 类名前后追加的内容
+        String classNameBefore = baseConfig.getClassNameBefore();
+        String classNameAfter = baseConfig.getClassNameAfter();
+        // 循环表信息
+        for (Table item : tableList) {
             System.out.println("开始解析表：" + item.toString());
             String tableName = item.getTableName();
             String tableNameCn = item.getTableNameCn();
@@ -45,129 +45,117 @@ public class WriteOutUtil {
                 System.out.println(tableName + "表中字段为空");
             } else {
                 GeneratorConfig generatorConfig = GeneratorConfig.builder()
-                        .packagePath(packagePath)
                         .tableName(tableName)
                         .tableNameCn(tableNameCn)
                         .dbName(dbName)
                         .columnList(columns)
                         .owner(item.getOwner())
+                        .classNameBefore(classNameBefore)
+                        .classNameAfter(classNameAfter)
                         .build();
                 if (item.getOwner() == null || "".equals(item.getOwner().trim())) {
                     generatorConfig.setOwner(dbName);
                 }
 
-                try {
-                    BufferedReader br = null;
+                BufferedReader br = null;
 
-                    String entityPath = baseConfig.getEntityPath();
-                    if (entityPath != null) {
-                        InputStream is;
-                        if ("".equals(entityPath)) {
-                            is = ClassLoader.getSystemResourceAsStream("template/Entity.java");
-                        } else {
-                            is = new FileInputStream(entityPath);
-                        }
-                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
-                        generatorConfig.setBr(br);
-                        ClassInfo entity = new EntityGenerator().create(generatorConfig);
-                        outputInterface.push(entity.getCode(), entity.getFileName(), outPath);
-                        is.close();
+                TemplateInfo entity = baseConfig.getEntity();
+                if (entity.isSelected()) {
+                    String packagePath = entity.getPackagePath();
+                    generatorConfig.setPackagePath(packagePath);
+                    String filePath = entity.getFilePath();
+                    String filterStr = entity.getFilterStr();
+                    String appendStr = entity.getAppendStr();
+                    generatorConfig.setFilterStr(filterStr);
+                    generatorConfig.setAppendStr(appendStr);
+                    InputStream is;
+                    if ("".equals(filePath)) {
+                        is = ClassLoader.getSystemResourceAsStream("template/Entity.java");
+                    } else {
+                        is = new FileInputStream(filePath);
                     }
+                    br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
+                    generatorConfig.setBr(br);
+                    // 生成类代码
+                    ClassInfo entityClassInfo = new EntityGenerator().create(generatorConfig);
+                    // 获取类路径，后边其他类中会用到
+                    generatorConfig.setEntityClassPath(entityClassInfo.getClassPath());
+                    outputInterface.push(entityClassInfo.getCode(), entityClassInfo.getFileName(), outPath);
+                    is.close();
+                }
 
-                    String voPath = baseConfig.getVoPath();
-                    if (voPath != null) {
-                        InputStream is;
-                        if ("".equals(voPath)) {
-                            is = ClassLoader.getSystemResourceAsStream("template/VO.java");
-                        } else {
-                            is = new FileInputStream(voPath);
-                        }
-                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
-                        generatorConfig.setBr(br);
-                        ClassInfo vo = new VOGenerator().create(generatorConfig);
-                        outputInterface.push(vo.getCode(), vo.getFileName(), outPath);
-                        is.close();
+                TemplateInfo mapper = baseConfig.getMapper();
+                if (mapper.isSelected()) {
+                    String packagePath = mapper.getPackagePath();
+                    generatorConfig.setPackagePath(packagePath);
+                    String filePath = mapper.getFilePath();
+                    InputStream is;
+                    if ("".equals(filePath)) {
+                        is = ClassLoader.getSystemResourceAsStream("template/Mapper.java");
+                    } else {
+                        is = new FileInputStream(filePath);
                     }
+                    br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
+                    generatorConfig.setBr(br);
+                    ClassInfo mapperClassInfo = new MapperGenerator().create(generatorConfig);
+                    generatorConfig.setMapperClassPath(mapperClassInfo.getClassPath());
+                    outputInterface.push(mapperClassInfo.getCode(), mapperClassInfo.getFileName(), outPath);
+                    is.close();
+                }
 
-                    String boPath = baseConfig.getBoPath();
-                    if (boPath != null) {
-                        InputStream is;
-                        if ("".equals(boPath)) {
-                            is = ClassLoader.getSystemResourceAsStream("template/BO.java");
-                        } else {
-                            is = new FileInputStream(boPath);
-                        }
-                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
-                        generatorConfig.setBr(br);
-                        ClassInfo bo = new BOGenerator().create(generatorConfig);
-                        outputInterface.push(bo.getCode(), bo.getFileName(), outPath);
-
+                TemplateInfo mapperXml = baseConfig.getMapperXml();
+                if (mapperXml.isSelected()) {
+                    String filePath = mapperXml.getFilePath();
+                    InputStream is;
+                    if ("".equals(filePath)) {
+                        is = ClassLoader.getSystemResourceAsStream("template/Mapper.xml");
+                    } else {
+                        is = new FileInputStream(filePath);
                     }
+                    br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
+                    generatorConfig.setBr(br);
+                    ClassInfo mapperXmlClassInfo = new MapperXmlGenerator().create(generatorConfig);
+                    outputInterface.push(mapperXmlClassInfo.getCode(), mapperXmlClassInfo.getFileName(), outPath);
+                    is.close();
+                }
 
-                    String mapperPath = baseConfig.getMapperPath();
-                    if (mapperPath != null) {
-                        InputStream is;
-                        if ("".equals(mapperPath)) {
-                            is = ClassLoader.getSystemResourceAsStream("template/Mapper.java");
-                        } else {
-                            is = new FileInputStream(mapperPath);
-                        }
-                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
-                        generatorConfig.setBr(br);
-                        ClassInfo mapper = new MapperGenerator().create(generatorConfig);
-                        outputInterface.push(mapper.getCode(), mapper.getFileName(), outPath);
-                        is.close();
+                TemplateInfo service = baseConfig.getService();
+                if (service.isSelected()) {
+                    String packagePath = service.getPackagePath();
+                    generatorConfig.setPackagePath(packagePath);
+                    String filePath = service.getFilePath();
+                    InputStream is;
+                    if ("".equals(filePath)) {
+                        is = ClassLoader.getSystemResourceAsStream("template/Service.java");
+                    } else {
+                        is = new FileInputStream(filePath);
                     }
+                    br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
+                    generatorConfig.setBr(br);
+                    ClassInfo serviceClassInfo = new ServiceGenerator().create(generatorConfig);
+                    generatorConfig.setServiceClassPath(serviceClassInfo.getClassPath());
+                    outputInterface.push(serviceClassInfo.getCode(), serviceClassInfo.getFileName(), outPath);
+                    is.close();
+                }
 
-                    String mapperXmlPath = baseConfig.getMapperXmlPath();
-                    if (mapperXmlPath != null) {
-                        InputStream is;
-                        if ("".equals(mapperXmlPath)) {
-                            is = ClassLoader.getSystemResourceAsStream("template/Mapper.xml");
-                        } else {
-                            is = new FileInputStream(mapperXmlPath);
-                        }
-                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
-                        generatorConfig.setBr(br);
-                        ClassInfo mapperXml = new MapperXmlGenerator().create(generatorConfig);
-                        outputInterface.push(mapperXml.getCode(), mapperXml.getFileName(), outPath);
-                        is.close();
+                TemplateInfo serviceImpl = baseConfig.getServiceImpl();
+                if (serviceImpl.isSelected()) {
+                    String packagePath = serviceImpl.getPackagePath();
+                    generatorConfig.setPackagePath(packagePath);
+                    String filePath = serviceImpl.getFilePath();
+                    InputStream is;
+                    if ("".equals(filePath)) {
+                        is = ClassLoader.getSystemResourceAsStream("template/ServiceImpl.java");
+                    } else {
+                        is = new FileInputStream(filePath);
                     }
-
-                    String servicePath = baseConfig.getServicePath();
-                    if (servicePath != null) {
-                        InputStream is;
-                        if ("".equals(servicePath)) {
-                            is = ClassLoader.getSystemResourceAsStream("template/Service.java");
-                        } else {
-                            is = new FileInputStream(servicePath);
-                        }
-                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
-                        generatorConfig.setBr(br);
-                        ClassInfo service = new ServiceGenerator().create(generatorConfig);
-                        outputInterface.push(service.getCode(), service.getFileName(), outPath);
-                        is.close();
-                    }
-
-                    String serviceImplPath = baseConfig.getServiceImplPath();
-                    if (serviceImplPath != null) {
-                        InputStream is;
-                        if ("".equals(serviceImplPath)) {
-                            is = ClassLoader.getSystemResourceAsStream("template/ServiceImpl.java");
-                        } else {
-                            is = new FileInputStream(serviceImplPath);
-                        }
-                        br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
-                        generatorConfig.setBr(br);
-                        ClassInfo serviceImpl = new ServiceImplGenerator().create(generatorConfig);
-                        outputInterface.push(serviceImpl.getCode(), serviceImpl.getFileName(), outPath);
-                        is.close();
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
+                    generatorConfig.setBr(br);
+                    ClassInfo serviceImplClassInfo = new ServiceImplGenerator().create(generatorConfig);
+                    outputInterface.push(serviceImplClassInfo.getCode(), serviceImplClassInfo.getFileName(), outPath);
+                    is.close();
                 }
             }
-        });
+        }
     }
 }

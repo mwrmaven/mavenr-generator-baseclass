@@ -3,10 +3,11 @@ package com.mavenr.util;
 import com.mavenr.entity.ClassInfo;
 import com.mavenr.entity.Column;
 import com.mavenr.entity.GeneratorConfig;
-import com.mavenr.enums.ClassTypeEnum;
+import com.mavenr.systemenum.ClassTypeEnum;
 
 import java.io.BufferedReader;
 import java.util.*;
+import java.util.prefs.BackingStoreException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -24,9 +25,29 @@ public class CodeCreateUtil {
      */
     private static final Pattern pattern = Pattern.compile("\\$\\{\\w*\\}");
 
-    public static ClassInfo createEntity(GeneratorConfig generatorConfig, String classType) {
+    public static ClassInfo createEntity(GeneratorConfig generatorConfig, String classType) throws Exception {
         String tableName = generatorConfig.getTableName();
+        String before = generatorConfig.getClassNameBefore();
+        String after = generatorConfig.getClassNameAfter();
         String classBaseName = TransferUtil.toClassBaseName(tableName);
+
+        ClassInfo classInfo = ClassInfo.builder().build();
+        // 保存根据表名转换的原类名
+        classInfo.setOriginClassName(classBaseName);
+        if (before != null && !"".equals(before)) {
+            classBaseName = TransferUtil.toClassBaseName(before) + classBaseName;
+        }
+        if (after != null && !"".equals(after)) {
+            classBaseName = TransferUtil.toClassBaseName(after) + classBaseName;
+        }
+        classBaseName += classType;
+        // 保存添加前缀、后缀以及类型后的类名
+        classInfo.setClassName(classBaseName);
+        // 保存文件名
+        classInfo.setFileName(classBaseName + ".java");
+        // 保存类的完整路径
+        String packagePath = generatorConfig.getPackagePath();
+        classInfo.setClassPath(packagePath + "." + classBaseName);
 
         // 遍历模板文件的行
         BufferedReader br = generatorConfig.getBr();
@@ -35,152 +56,181 @@ public class CodeCreateUtil {
         int i = 0;
         boolean flag = false;
         StringBuilder temp = new StringBuilder();
-        try {
-            // 遍历查询行中是否存在参数
-            while ((line = br.readLine()) != null) {
-                i++;
-                if (i == 1 && !line.startsWith("package ")) {
-                    continue;
-                }
-                if (flag) {
-                    temp.append(line).append("\n");
-                } else {
-                    // 替换行代码中的参数
-                    line = TransferUtil.replaceParamToValue(classType, line, generatorConfig, null);
-                    code.append(line).append("\n");
-                    if (line.startsWith("public class")) {
-                        flag = true;
-                    }
-                }
-            }
-
-            // 处理字段属性值（删除末尾的大括号 }）
-            String columnCode = temp.substring(0, temp.lastIndexOf("}"));
-            // 遍历字段
-            List<Column> columnList = generatorConfig.getColumnList();
-            columnList.sort(new Comparator<Column>() {
-                @Override
-                public int compare(Column o1, Column o2) {
-                    return o1.getIndex() - o2.getIndex();
-                }
-            });
-            int idPreIndex = -1;
-            for(Column item : columnList) {
-                // 导入类跳过系统字段
-                String ignore = "ETL_DT,ID,DATA_STATUS,VERSION,CREATE_TIME,CREATOR,REPORT_INSTANCE_ID,TASK_INSTANCE_ID";
-                String[] is = ignore.split(",");
-                List<String> isList = Arrays.asList(is);
-                if (isList.contains(item.getColumnName())) {
-                    continue;
-                }
-                // 替换行代码中的参数
-                System.out.println("替换的字段信息为：" + item.toString());
-                String result = TransferUtil.replaceParamToValue(classType, columnCode, generatorConfig, item);
-                idPreIndex = item.getIndex();
-                code.append(result);
-            }
-
-            // 在导入类文件中追加
-            String endAppend = "    @SubmitReportColumn(fieldName = \"ID\", fieldChineseName = \"主键id\", fieldType = FieldType.VARCHAR, isBizPrimaryKey = true, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.NULL_INIT_UUID, columnIndex = " + (idPreIndex + 1 + 1) + ")\n" +
-                    "    private String id;\n" +
-                    "\n" +
-                    "    @ExcelIgnore\n" +
-                    "    @SubmitReportColumn(fieldName = \"DATA_STATUS\", fieldChineseName = \"数据有效状态\", fieldType = FieldType.NUMBER, isDataField = false, fieldValueWay = FieldValueWay.UPDATEDATA, updatePre = \"0\", data = \"1\")\n" +
-                    "    String dataStatus;\n" +
-                    "\n" +
-                    "    @ExcelIgnore\n" +
-                    "    @SubmitReportColumn(fieldName = \"VERSION\", fieldChineseName = \"版本\", fieldType = FieldType.NUMBER, isDataField = false, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.VERSION, insertVersion = true)\n" +
-                    "    String version;\n" +
-                    "\n" +
-                    "    @ExcelIgnore\n" +
-                    "    @SubmitReportColumn(fieldName = \"CREATE_TIME\", fieldChineseName = \"创建时间\", isDataField = false, isRecordOpeTime = true, fieldType = FieldType.TIMESTAMP, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.TIME_TIMESTAMP, isCreateTime = true)\n" +
-                    "    String createTime;\n" +
-                    "\n" +
-                    "    @ExcelIgnore\n" +
-                    "    @SubmitReportColumn(fieldName = \"CREATOR\", fieldChineseName = \"创建人\", isDataField = false, fieldType = FieldType.VARCHAR, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.USER_CODE)\n" +
-                    "    String creator;\n" +
-                    "\n" +
-                    "    @ExcelIgnore\n" +
-                    "    @SubmitReportColumn(fieldName = \"REPORT_INSTANCE_ID\", fieldChineseName = \"报表实例ID\", fieldType = FieldType.VARCHAR, isDataField = false, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.REPORT_INSTANCE_ID)\n" +
-                    "    String reportInstanceId;\n" +
-                    "\n" +
-                    "    @ExcelIgnore\n" +
-                    "    @SubmitReportColumn(fieldName = \"TASK_INSTANCE_ID\", fieldChineseName = \"任务实例ID\", fieldType = FieldType.VARCHAR, isDataField = false, fieldValueWay = FieldValueWay.SYSTEM, systemParaName = SystemParaConstant.TASK_INSTANCE_ID)\n" +
-                    "    String taskInstanceId;\n";
-
-            String exportEndAppend = "    /**\n" +
-                    "     * id\n" +
-                    "     */\n" +
-                    "    @SubmitReportColumn(fieldName = \"ID\", fieldChineseName = \"主键id\", fieldType = FieldType.VARCHAR)\n" +
-                    "    private String id;";
-            code.append(exportEndAppend);
-
-            code.append("\n}");
-        } catch (Exception e) {
-            System.out.println("解析模板文件出错！" + e.getMessage());
-            e.printStackTrace();
+        // 获取跳过得字段
+        String filterStr = generatorConfig.getFilterStr();
+        List<String> filterList = null;
+        if (filterStr != null && !"".equals(filterStr)) {
+            String[] filter = filterStr.split(",");
+            filterList = Arrays.asList(filter);
         }
 
-        ClassInfo classInfo = ClassInfo.builder()
-                .fileName(classBaseName + classType + ".java")
-                .code(code.toString())
-                .build();
+        // 遍历查询行中是否存在参数
+        while ((line = br.readLine()) != null) {
+            i++;
+            if (i == 1 && !line.startsWith("package ")) {
+                continue;
+            }
+            if (flag) {
+                // 只添加字段属性行
+                temp.append(line).append("\n");
+            } else {
+                // 替换行代码中的参数
+                line = TransferUtil.replaceParamToValue(classType, line, generatorConfig, classInfo, null);
+                code.append(line).append("\n");
+                if (line.startsWith("public class")) {
+                    flag = true;
+                }
+            }
+        }
+
+        // 处理字段属性值（删除末尾的大括号 }）
+        String columnCode = temp.substring(0, temp.lastIndexOf("}"));
+        // 遍历字段
+        List<Column> columnList = generatorConfig.getColumnList();
+        columnList.sort(new Comparator<Column>() {
+            @Override
+            public int compare(Column o1, Column o2) {
+                return o1.getIndex() - o2.getIndex();
+            }
+        });
+        for(Column item : columnList) {
+            // 导入类跳过系统字段
+            if (filterList != null && filterList.contains(item.getColumnName())) {
+                continue;
+            }
+            // 替换行代码中的参数
+            System.out.println("替换的字段信息为：" + item.toString());
+            String result = TransferUtil.replaceParamToValue(classType, columnCode, generatorConfig, classInfo, item);
+            code.append(result);
+        }
+
+        // 追加文本
+        String appendStr = generatorConfig.getAppendStr();
+        code.append(appendStr);
+
+        code.append("\n}");
+
+        classInfo.setCode(code.toString());
         return classInfo;
     }
 
-    public static ClassInfo createMapper(GeneratorConfig generatorConfig, String classType) {
+    public static ClassInfo createMapper(GeneratorConfig generatorConfig, String classType) throws Exception {
         String tableName = generatorConfig.getTableName();
         String classBaseName = TransferUtil.toClassBaseName(tableName);
+        String entityClassPath = generatorConfig.getEntityClassPath();
+        String before = generatorConfig.getClassNameBefore();
+        String after = generatorConfig.getClassNameAfter();
+
+        ClassInfo classInfo = ClassInfo.builder().build();
+        // 保存根据表名转换的原类名
+        classInfo.setOriginClassName(classBaseName);
+        if (before != null && !"".equals(before)) {
+            classBaseName = TransferUtil.toClassBaseName(before) + classBaseName;
+        }
+        if (after != null && !"".equals(after)) {
+            classBaseName = TransferUtil.toClassBaseName(after) + classBaseName;
+        }
+        classBaseName += classType;
+        // 保存添加前缀、后缀以及类型后的类名
+        classInfo.setClassName(classBaseName);
+        // 保存文件名
+        classInfo.setFileName(classBaseName + ".java");
+        // 保存类的完整路径
+        String packagePath = generatorConfig.getPackagePath();
+        classInfo.setClassPath(packagePath + "." + classBaseName);
 
         // 遍历模板文件的行
         BufferedReader br = generatorConfig.getBr();
         String line = "";
         StringBuilder code = new StringBuilder();
         int i = 0;
-        StringBuilder temp = new StringBuilder();
-        try {
-            // 遍历查询行中是否存在参数
-            while ((line = br.readLine()) != null) {
-                i++;
-                if (i == 1 && !line.startsWith("package ")) {
-                    continue;
-                }
-                // 替换行代码中的参数
-                line = TransferUtil.replaceParamToValue(classType, line, generatorConfig, null);
-                code.append(line).append("\n");
+        boolean flag = true;
+
+        // 遍历查询行中是否存在参数
+        while ((line = br.readLine()) != null) {
+            i++;
+            if (i == 1 && !line.startsWith("package ")) {
+                continue;
             }
-        } catch (Exception e) {
-            System.out.println("解析模板文件出错！" + e.getMessage());
-            e.printStackTrace();
+            // 替换行代码中的参数
+            line = TransferUtil.replaceParamToValue(classType, line, generatorConfig, classInfo, null);
+            code.append(line).append("\n");
+            if (line.startsWith("import") && flag) {
+                code.append("import " + entityClassPath).append(";").append("\n");
+                flag = false;
+            }
         }
 
-        ClassInfo classInfo = ClassInfo.builder()
-                .fileName(classBaseName + classType + ".java")
-                .code(code.toString())
-                .build();
+        classInfo.setCode(code.toString());
         return classInfo;
     }
 
-    public static ClassInfo createMapperXml(GeneratorConfig generatorConfig) {
+    public static ClassInfo createServiceImpl(GeneratorConfig generatorConfig, String classType) throws Exception {
         String tableName = generatorConfig.getTableName();
-        String entityClassName = TransferUtil.toClassBaseName(tableName);
-        String mapperClassName = TransferUtil.toClassBaseName(tableName) + ClassTypeEnum.MAPPER.getClassType();
+        String classBaseName = TransferUtil.toClassBaseName(tableName);
+        String entityClassPath = generatorConfig.getEntityClassPath();
+        String mapperClassPath = generatorConfig.getMapperClassPath();
+        String serviceClassPath = generatorConfig.getServiceClassPath();
+        String before = generatorConfig.getClassNameBefore();
+        String after = generatorConfig.getClassNameAfter();
+
+        ClassInfo classInfo = ClassInfo.builder().build();
+        // 保存根据表名转换的原类名
+        classInfo.setOriginClassName(classBaseName);
+        if (before != null && !"".equals(before)) {
+            classBaseName = TransferUtil.toClassBaseName(before) + classBaseName;
+        }
+        if (after != null && !"".equals(after)) {
+            classBaseName = TransferUtil.toClassBaseName(after) + classBaseName;
+        }
+        classBaseName += classType;
+        // 保存添加前缀、后缀以及类型后的类名
+        classInfo.setClassName(classBaseName);
+        // 保存文件名
+        classInfo.setFileName(classBaseName + ".java");
+        // 保存类的完整路径
         String packagePath = generatorConfig.getPackagePath();
-        List<Column> columnList = generatorConfig.getColumnList();
-        String allColumns = columnList.stream().map(Column::getColumnName).collect(Collectors.joining(", "));
+        classInfo.setClassPath(packagePath + "." + classBaseName);
 
         // 遍历模板文件的行
         BufferedReader br = generatorConfig.getBr();
         String line = "";
         StringBuilder code = new StringBuilder();
         int i = 0;
+        boolean flag = true;
+
+        // 遍历查询行中是否存在参数
+        while ((line = br.readLine()) != null) {
+            i++;
+            if (i == 1 && !line.startsWith("package ")) {
+                continue;
+            }
+            // 替换行代码中的参数
+            line = TransferUtil.replaceParamToValue(classType, line, generatorConfig, classInfo, null);
+            code.append(line).append("\n");
+            if (line.startsWith("import") && flag) {
+                code.append("import " + entityClassPath).append(";").append("\n");
+                code.append("import " + mapperClassPath).append(";").append("\n");
+                code.append("import " + serviceClassPath).append(";").append("\n");
+                flag = false;
+            }
+        }
+
+        classInfo.setCode(code.toString());
+        return classInfo;
+    }
+
+    public static ClassInfo createMapperXml(GeneratorConfig generatorConfig) throws Exception {
+        String mapperClassPath = generatorConfig.getMapperClassPath();
+        String mapperClassName = mapperClassPath.substring(mapperClassPath.lastIndexOf(".") + 1);
+
+        // 遍历模板文件的行
+        BufferedReader br = generatorConfig.getBr();
+        String line = "";
+        StringBuilder code = new StringBuilder();
         try {
             // 遍历查询行中是否存在参数
             while ((line = br.readLine()) != null) {
-                i++;
-                if (i == 1 && !line.startsWith("package ")) {
-                    continue;
-                }
                 // 替换行代码中的参数
                 line = replaceParamToValue(line, generatorConfig);
                 code.append(line).append("\n");
@@ -228,11 +278,11 @@ public class CodeCreateUtil {
         StringBuilder sb = new StringBuilder();
         if (matcher.find()) {
             String param = matcher.group();
-            if ("${mapperClassName}".equals(param) || "${entityClassName}".equals(param)
-                    || "${packagePath}".equals(param) || "${tableName}".equals(param)
-                    || "${tableNameCn}".equals(param)
+            if ("${packagePath}".equals(param) || "${tableName}".equals(param)
                     || "${columns}".equals(param) || line.trim().startsWith("WHERE ")
-                    || "${primaryKeyType}".equals(param) || "${dbName}".equals(param) || "${owner}".equals(param)) {
+                    || "${primaryKeyType}".equals(param) || "${dbName}".equals(param)
+                    || "${owner}".equals(param) || "${mapperClassPath}".equals(param)
+                    || "${entityClassPath}".equals(param)) {
                 matcher = pattern.matcher(result);
                 while (matcher.find()) {
                     param = matcher.group();
@@ -240,9 +290,6 @@ public class CodeCreateUtil {
                     switch (param) {
                         case "${tableName}":
                             result = result.replace("${tableName}", generatorConfig.getTableName());
-                            break;
-                        case "${tableNameCn}":
-                            result = result.replace("${tableNameCn}", generatorConfig.getTableNameCn());
                             break;
                         case "${primaryKeyColumn}":
                             result = result.replace("${primaryKeyColumn}", columnPrimaryKey.getColumnName());
@@ -256,12 +303,6 @@ public class CodeCreateUtil {
                         case "${columns}":
                             result = result.replace("${columns}", columnList.stream().map(Column::getColumnName).collect(Collectors.joining(", ")));
                             break;
-                        case "${mapperClassName}":
-                            result = result.replace("${mapperClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + ClassTypeEnum.MAPPER.getClassType());
-                            break;
-                        case "${entityClassName}":
-                            result = result.replace("${entityClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()));
-                            break;
                         case "${packagePath}":
                             result = result.replace("${packagePath}", generatorConfig.getPackagePath());
                             break;
@@ -273,6 +314,12 @@ public class CodeCreateUtil {
                             break;
                         case "${jdbcType}":
                             result = result.replace("${jdbcType}", columnPrimaryKey.getJdbcType());
+                            break;
+                        case "${entityClassPath}":
+                            result = result.replace("${entityClassPath}", generatorConfig.getEntityClassPath());
+                            break;
+                        case "${mapperClassPath}":
+                            result = result.replace("${mapperClassPath}", generatorConfig.getMapperClassPath());
                             break;
                         default:
                     }

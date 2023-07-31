@@ -1,6 +1,7 @@
-package com.mavenr.service;
+package com.mavenr.service.impl;
 
 import com.mavenr.entity.BaseConfig;
+import com.mavenr.service.DataInfoInterface;
 import com.mavenr.util.ConnectionUtil;
 
 import java.sql.Connection;
@@ -19,14 +20,14 @@ public abstract class DatabaseBasic implements DataInfoInterface {
     public Connection connection;
 
     @Override
-    public void init(BaseConfig baseConfig) {
+    public void init(BaseConfig baseConfig) throws Exception {
         connection = ConnectionUtil.getConnectionNew(baseConfig);
     }
 
     /**
      * 实现数据库连接的关闭
      */
-    public void close() {
+    public void close() throws Exception {
         ConnectionUtil.close(connection);
     }
 }

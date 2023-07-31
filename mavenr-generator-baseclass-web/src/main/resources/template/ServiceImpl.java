@@ -1,9 +1,6 @@
 // 文件中的${}参数会被替换，属性（Object variable）会根据表字段循环生成；其中 className为类名，createTime为创建时间，tableName为表名， columnComments为字段注释， columnName为字段名
-package ${packagePath}.service.impl;
+package ${packagePath};
 
-import ${packagePath}.entity.${entityClassName};
-import ${packagePath}.mapper.${mapperClassName};
-import ${packagePath}.service.${serviceClassName};
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +15,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class ${className} implements ${serviceClassName}{
+public class ${className} implements ${serviceClassName} {
 
     @Autowired
     private ${mapperClassName} ${mapperClassPropertyName};

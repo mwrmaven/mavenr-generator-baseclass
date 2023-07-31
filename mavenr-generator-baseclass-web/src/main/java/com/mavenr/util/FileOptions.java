@@ -18,28 +18,24 @@ public class FileOptions {
      * 删除文件、文件夹以及文件夹中的子项
      * @param file 文件或文件夹
      */
-    public static void deleteFile(File file) {
+    public static void deleteFile(File file) throws Exception {
         if (file == null || !file.exists()) {
             return;
         }
 
-        try {
-            Path path = file.toPath();
-            if (file.isFile()) {
-                Files.deleteIfExists(path);
-                return;
-            }
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                if (files != null && files.length != 0) {
-                    for (File f : files) {
-                        deleteFile(f);
-                    }
+        Path path = file.toPath();
+        if (file.isFile()) {
+            Files.deleteIfExists(path);
+            return;
+        }
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null && files.length != 0) {
+                for (File f : files) {
+                    deleteFile(f);
                 }
-                Files.deleteIfExists(path);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            Files.deleteIfExists(path);
         }
     }
 
@@ -48,7 +44,7 @@ public class FileOptions {
      * @param in
      * @param outFilePath
      */
-    public static void writeToFile(InputStream in, String outFilePath) {
+    public static void writeToFile(InputStream in, String outFilePath) throws Exception {
         byte[] buffer = new byte[BUFFER_SIZE];
         OutputStream out = null;
         try {
@@ -59,7 +55,9 @@ public class FileOptions {
                 out.flush();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            String msg = "文件写出出错！";
+            System.out.println(msg + e.getMessage());
+            throw e;
         } finally {
             try {
                 if (out != null) {
@@ -69,7 +67,9 @@ public class FileOptions {
                     in.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                String msg = "文件流关闭出错！";
+                System.out.println(msg + e.getMessage());
+                throw e;
             }
         }
     }

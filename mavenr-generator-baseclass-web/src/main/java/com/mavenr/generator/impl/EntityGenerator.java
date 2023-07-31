@@ -2,7 +2,6 @@ package com.mavenr.generator.impl;
 
 import com.mavenr.entity.ClassInfo;
 import com.mavenr.entity.GeneratorConfig;
-import com.mavenr.enums.ClassTypeEnum;
 import com.mavenr.generator.ClassGeneratorInterface;
 import com.mavenr.util.CodeCreateUtil;
 
@@ -17,7 +16,7 @@ public class EntityGenerator implements ClassGeneratorInterface {
 
 
     @Override
-    public ClassInfo create(GeneratorConfig generatorConfig) {
+    public ClassInfo create(GeneratorConfig generatorConfig) throws Exception {
         // 生成 entity 的类代码
         return CodeCreateUtil.createEntity(generatorConfig, "");
     }

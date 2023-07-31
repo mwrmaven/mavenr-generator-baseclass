@@ -1,4 +1,4 @@
-package com.mavenr.service;
+package com.mavenr.service.impl;
 
 import com.mavenr.entity.BaseConfig;
 import com.mavenr.entity.Column;
@@ -62,15 +62,11 @@ public class OracleDatabase extends DatabaseBasic{
         }
         System.out.println("查询的表名为："
                 + Arrays.toString(tableList.stream().map(Table::getTableName).collect(Collectors.toList()).toArray()));
-        tableList.forEach(item -> {
+        for (Table item : tableList) {
             List<Column> columns = null;
-            try {
-                columns = allColumns(connection, item.getTableName());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            columns = allColumns(connection, item.getTableName());
             item.setColumns(columns);
-        });
+        }
 
         // 关闭连接
         statement.close();
@@ -78,7 +74,7 @@ public class OracleDatabase extends DatabaseBasic{
         return tableList;
     }
 
-    private List<Column> allColumns(Connection connection, String tableName) throws SQLException {
+    private List<Column> allColumns(Connection connection, String tableName) throws Exception {
         // 获取oracle表的主键
         String showColumns = "select a.COLUMN_NAME, a.DATA_TYPE, u.COMMENTS, a.DATA_SCALE, a.COLUMN_ID from user_col_comments u " +
                 "left join all_tab_columns a on u.TABLE_NAME = a.TABLE_NAME and a.COLUMN_NAME = u.COLUMN_NAME " +
@@ -101,13 +97,12 @@ public class OracleDatabase extends DatabaseBasic{
                         columnEnum = ColumnEnum.NUMBERPLUS;
                     }
                 }
-                if ("VARCHAR2".equals(columnType)) {
-                    columnType = "VARCHAR";
-                }
                 String propertyType = columnType;
                 if (columnEnum != null) {
                     propertyType = columnEnum.getPropertyType();
                 }
+
+                // 解析jdbc的type
                 String jdbcType = columnType;
                 JdbcTypeEnum jdbcTypeEnum = JdbcTypeEnum.getByColumnType(columnType);
                 if (jdbcTypeEnum != null) {
@@ -149,13 +144,17 @@ public class OracleDatabase extends DatabaseBasic{
                 }
             });
         } catch (SQLException e) {
-            e.printStackTrace();
+            String msg = "查询表字段出错!";
+            System.out.println(msg + e.getMessage());
+            throw e;
         } finally {
             if (statement != null) {
                 try {
                     statement.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    String msg = "关闭数据库连接出错！";
+                    System.out.println(msg + e.getMessage());
+                    throw e;
                 }
             }
         }

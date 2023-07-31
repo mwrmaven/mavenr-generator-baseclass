@@ -44,19 +44,27 @@ public class BaseConfig {
      * 表明，多个表名以","分隔
      */
     String tableNames;
+
     /**
-     * 包的基础路径
+     * 生成类的模板信息
      */
-    String packageBasePath;
-    String entityPath;
-    String voPath;
-    String mapperPath;
-    String mapperXmlPath;
-    String servicePath;
-    String serviceImplPath;
-    String boPath;
+    TemplateInfo entity;
+    TemplateInfo mapper;
+    TemplateInfo mapperXml;
+    TemplateInfo service;
+    TemplateInfo serviceImpl;
     /**
      * 文件输出路径
      */
     String outPath;
+
+    /**
+     * 类名前追加
+     */
+    String classNameBefore;
+
+    /**
+     * 类名后追加
+     */
+    String classNameAfter;
 }

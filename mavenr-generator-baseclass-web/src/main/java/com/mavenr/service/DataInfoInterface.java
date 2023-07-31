@@ -18,7 +18,7 @@ public interface DataInfoInterface {
      * 初始化信息
      * @param baseConfig
      */
-    void init(BaseConfig baseConfig);
+    void init(BaseConfig baseConfig) throws Exception;
 
     /**
      * 表信息获取

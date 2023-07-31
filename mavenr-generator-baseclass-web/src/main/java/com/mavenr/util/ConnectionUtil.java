@@ -2,8 +2,8 @@ package com.mavenr.util;
 
 
 import com.mavenr.entity.BaseConfig;
-import com.mavenr.enums.DatabaseTypeEnum;
-import lombok.extern.slf4j.Slf4j;
+import com.mavenr.systemenum.DatabaseTypeEnum;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,7 +21,7 @@ public class ConnectionUtil {
      * @param baseConfig
      * @return
      */
-    public static Connection getConnectionNew(BaseConfig baseConfig) {
+    public static Connection getConnectionNew(BaseConfig baseConfig) throws Exception{
         // 数据库连接url
         String url = "";
         String driverClassName = "";
@@ -63,11 +63,14 @@ public class ConnectionUtil {
                 try {
                     connection = DriverManager.getConnection(url, username, password);
                 } catch (SQLException ex) {
-                    ex.printStackTrace();
+                    String msg = "数据库连接失败！url连接：" + url;
+                    System.out.println(msg + ex.getMessage());
+                    throw ex;
                 }
-            } else {
-                e.printStackTrace();
             }
+            String msg = "数据库连接失败！url连接：" + url;
+            System.out.println(msg + e.getMessage());
+            throw e;
         }
         return connection;
     }
@@ -76,11 +79,7 @@ public class ConnectionUtil {
      * 关闭数据库连接
      * @param connection
      */
-    public static void close(Connection connection) {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public static void close(Connection connection) throws Exception {
+        connection.close();
     }
 }

@@ -5,7 +5,11 @@ import com.mavenr.window.DatabaseConfig;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -51,8 +55,6 @@ public class App extends Application {
         stage.setHeight(standardHeight);
         stage.setMinWidth(standardWidth);
         stage.setMinHeight(standardHeight);
-//        stage.setMaxWidth(standardWidth);
-//        stage.setMaxHeight(standardHeight + 100);
         stage.show();
 
         // 此时可以获取到scene的实际宽高
@@ -60,5 +62,6 @@ public class App extends Application {
         double sHeight = scene.getHeight();
         DatabaseConfig dc = new DatabaseConfig();
         ap.getChildren().add(dc.getDatabaseInfo(sWidth, sHeight));
+
     }
 }

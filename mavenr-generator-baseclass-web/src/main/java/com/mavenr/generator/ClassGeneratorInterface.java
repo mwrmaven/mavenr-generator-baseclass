@@ -16,5 +16,5 @@ public interface ClassGeneratorInterface {
      * @param generatorConfig 生成类代码的参数
      * @return
      */
-    ClassInfo create(GeneratorConfig generatorConfig);
+    ClassInfo create(GeneratorConfig generatorConfig) throws Exception;
 }

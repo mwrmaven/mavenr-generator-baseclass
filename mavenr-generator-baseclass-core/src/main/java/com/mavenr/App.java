@@ -21,7 +21,7 @@ import java.util.Properties;
  * Hello world!
  */
 public class App {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws Exception {
 
         System.out.println("默认读取当前路径下的conf.properties配置文件\n" +
                 "若要读取指定文件，请使用 -conf 命令参数指定文件的全路径，示例如下：\n" +

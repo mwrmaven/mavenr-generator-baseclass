@@ -1,8 +1,9 @@
 package com.mavenr.util;
 
+import com.mavenr.entity.ClassInfo;
 import com.mavenr.entity.Column;
 import com.mavenr.entity.GeneratorConfig;
-import com.mavenr.enums.ClassTypeEnum;
+import com.mavenr.systemenum.ClassTypeEnum;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -70,7 +71,7 @@ public class TransferUtil {
      * @param column
      * @return
      */
-    public static String replaceParamToValue(String classType, String line, GeneratorConfig generatorConfig, Column column) {
+    public static String replaceParamToValue(String classType, String line, GeneratorConfig generatorConfig, ClassInfo classInfo, Column column) {
         String result = line;
         Matcher matcher = pattern.matcher(result);
         while (matcher.find()) {
@@ -86,10 +87,10 @@ public class TransferUtil {
                     result = result.replace("${tableNameCn}", generatorConfig.getTableNameCn());
                     break;
                 case "${className}":
-                    result = result.replace("${className}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + classType);
+                    result = result.replace("${className}", classInfo.getClassName());
                     break;
-                case "${exportClassName}":
-                    result = result.replace("${exportClassName}", TransferUtil.toClassBaseName(generatorConfig.getTableName()) + "Export" + classType);
+                case "${originClassName}":
+                    result = result.replace("${originClassName}", classInfo.getOriginClassName());
                     break;
                 case "${columnComments}":
                     result = result.replace("${columnComments}", column.getColumnNameCn());
@@ -130,11 +131,8 @@ public class TransferUtil {
                 case "${columns}":
                     result = result.replace("${columns}", generatorConfig.getColumnList().stream().map(Column::getColumnName).collect(Collectors.joining(", ")));
                     break;
-                case "${importColumnIndex}":
-                    result = result.replace("${importColumnIndex}", String.valueOf(column.getIndex() + 1));
-                    break;
-                case "${exportColumnIndex}":
-                    result = result.replace("${exportColumnIndex}", String.valueOf(column.getIndex()));
+                case "${columnIndex}":
+                    result = result.replace("${columnIndex}", String.valueOf(column.getIndex()));
                     break;
                 default:
             }

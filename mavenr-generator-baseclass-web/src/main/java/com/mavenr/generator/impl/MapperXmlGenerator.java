@@ -1,18 +1,9 @@
 package com.mavenr.generator.impl;
 
 import com.mavenr.entity.ClassInfo;
-import com.mavenr.entity.Column;
 import com.mavenr.entity.GeneratorConfig;
-import com.mavenr.enums.JdbcTypeEnum;
 import com.mavenr.generator.ClassGeneratorInterface;
 import com.mavenr.util.CodeCreateUtil;
-import com.mavenr.util.TransferUtil;
-
-import java.io.BufferedReader;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author mavenr
@@ -22,7 +13,7 @@ import java.util.stream.Stream;
  */
 public class MapperXmlGenerator implements ClassGeneratorInterface {
     @Override
-    public ClassInfo create(GeneratorConfig generatorConfig) {
+    public ClassInfo create(GeneratorConfig generatorConfig) throws Exception {
         return CodeCreateUtil.createMapperXml(generatorConfig);
     }
 }

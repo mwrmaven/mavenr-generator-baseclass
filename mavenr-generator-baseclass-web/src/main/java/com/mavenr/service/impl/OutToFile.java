@@ -1,5 +1,6 @@
-package com.mavenr.service;
+package com.mavenr.service.impl;
 
+import com.mavenr.service.OutputInterface;
 import com.mavenr.systemenum.Charset;
 
 import java.io.File;
