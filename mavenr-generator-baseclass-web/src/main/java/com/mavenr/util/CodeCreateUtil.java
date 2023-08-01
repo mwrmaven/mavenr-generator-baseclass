@@ -53,10 +53,12 @@ public class CodeCreateUtil {
         StringBuilder temp = new StringBuilder();
         // 获取跳过得字段
         String filterStr = generatorConfig.getFilterStr();
-        List<String> filterList = null;
+        List<String> filterList = new ArrayList<>();
         if (filterStr != null && !"".equals(filterStr)) {
             String[] filter = filterStr.split(",");
-            filterList = Arrays.asList(filter);
+            for (String f : filter) {
+                filterList.add(f.toUpperCase());
+            }
         }
 
         // 遍历查询行中是否存在参数
@@ -90,7 +92,7 @@ public class CodeCreateUtil {
         });
         for(Column item : columnList) {
             // 导入类跳过系统字段
-            if (filterList != null && filterList.contains(item.getColumnName())) {
+            if (filterList.contains(item.getColumnName().toUpperCase())) {
                 continue;
             }
             // 替换行代码中的参数
