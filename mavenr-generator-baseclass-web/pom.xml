@@ -91,6 +91,11 @@
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        <!-- 动态计算 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-jexl3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

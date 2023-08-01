@@ -108,18 +108,23 @@ public class DatabaseConfig {
         Label example = new Label("例如VO类的类名，追加后为：{类名前}ClassName{类名后}VO。如果不添加则不会追加内容。");
         classEdit.getChildren().addAll(beforeClassName, afterClassName, example);
 
-        HBox entityChooser = nodeCreateUtil.createLabelAndFileChooser("请选择entity/VO/BO类模板文件：", "template/Entity.java", paramEntity, booleanEntity, "entityChooser", "isEntity");
+        HBox entityChooser = nodeCreateUtil.createLabelAndFileChooser("请选择entity/VO/BO类模板文件：", "template/Entity.java",
+                paramEntity, booleanEntity, "entityChooser", "isEntity", true, true);
         HBox entityPackageField = nodeCreateUtil.createLabelAndTextField("包路径：", "", "");
 
         entityChooser.getChildren().add(entityPackageField);
-        HBox mapperChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapper类模板文件：", "template/Mapper.java", paramMapper, booleanMapper, "mapperChooser", "isMapper");
+        HBox mapperChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapper类模板文件：", "template/Mapper.java",
+                paramMapper, booleanMapper, "mapperChooser", "isMapper", false, false);
         HBox mapperPackageField = nodeCreateUtil.createLabelAndTextField("包路径：", "", "");
         mapperChooser.getChildren().add(mapperPackageField);
-        HBox mapperXmlChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapperXml类模板文件：", "template/Mapper.xml", paramMapperXml, booleanMapperXml, "mapperXmlChooser", "isMapperXml");
-        HBox serviceChooser = nodeCreateUtil.createLabelAndFileChooser("请选择service类模板文件：", "template/Service.java", paramService, booleanService, "serviceChooser", "isService");
+        HBox mapperXmlChooser = nodeCreateUtil.createLabelAndFileChooser("请选择mapperXml类模板文件：", "template/Mapper.xml",
+                paramMapperXml, booleanMapperXml, "mapperXmlChooser", "isMapperXml", false, false);
+        HBox serviceChooser = nodeCreateUtil.createLabelAndFileChooser("请选择service类模板文件：", "template/Service.java",
+                paramService, booleanService, "serviceChooser", "isService", false, false);
         HBox servicePackageField = nodeCreateUtil.createLabelAndTextField("包路径：", "", "");
         serviceChooser.getChildren().add(servicePackageField);
-        HBox serviceImplChooser = nodeCreateUtil.createLabelAndFileChooser("请选择serviceImpl类模板文件：", "template/ServiceImpl.java", paramServiceImpl, booleanServiceImpl, "serviceImplChooser", "isServiceImpl");
+        HBox serviceImplChooser = nodeCreateUtil.createLabelAndFileChooser("请选择serviceImpl类模板文件：", "template/ServiceImpl.java",
+                paramServiceImpl, booleanServiceImpl, "serviceImplChooser", "isServiceImpl", false, false);
         HBox serviceImplPackageField = nodeCreateUtil.createLabelAndTextField("包路径：", "", "");
         serviceImplChooser.getChildren().add(serviceImplPackageField);
 
@@ -277,7 +282,7 @@ public class DatabaseConfig {
                     // 表名
                     String tableNames = getTextFieldValue(databaseInfos.get(6));
 
-                    // 类前和类后追加的文本
+                    // 类名前和类名后追加的文本
                     ObservableList<Node> classEditChildren = ((HBox) children.get(2)).getChildren();
                     String before = getTextFieldValue(classEditChildren.get(0));
                     String after = getTextFieldValue(classEditChildren.get(1));
@@ -381,9 +386,10 @@ public class DatabaseConfig {
         // 模板文件路径
         String filePath = ((TextField) hbox.getChildren().get(6)).getText();
         // 过滤字段
-        String filterStr = ((TextField) hbox.getChildren().get(7)).getText();
+        String filterStr = ((TextArea) hbox.getChildren().get(7)).getText();
         // 追加字段
-        String appendStr = ((TextField) hbox.getChildren().get(8)).getText();
+        String appendStr = ((TextArea) hbox.getChildren().get(8)).getText();
+        appendStr = appendStr.replaceAll("\n", System.getProperty("line.separator"));
         // 类所在的包路径
         String packagePath = "";
         if (hbox.getChildren().size() > 9) {

@@ -74,11 +74,15 @@ public class NodeCreateUtil {
      * @param filePath resources下文件的路径
      * @param text 文本值
      * @param isSelect 是否选择
-     * @param textKey 参数文件中文本值的key
-     * @param isSelectKey 参数文件中是否选中的key
+     * @param textKey 参数文件中保存文本值时所使用的key
+     * @param isSelectKey 参数文件中保存是否选中时所使用的key
+     * @param needFilter 是否需要过滤字段（过滤的字段不在类文件中生成代码）
+     * @param needAppend 是否需要追加文本
      * @return
      */
-    public HBox createLabelAndFileChooser(String labelName, String filePath, String text, String isSelect, String textKey, String isSelectKey) {
+    public HBox createLabelAndFileChooser(String labelName, String filePath,
+                                          String text, String isSelect, String textKey,
+                                          String isSelectKey, boolean needFilter, boolean needAppend) {
         // 标签
         Label label = new Label(labelName);
         // 输入框
@@ -167,9 +171,10 @@ public class NodeCreateUtil {
             }
         });
 
-        TextField filter = new TextField();
+        TextArea filter = new TextArea();
         // 隐藏控件
         filter.setManaged(false);
+        filter.setVisible(false);
         filter.setPrefHeight(0);
         filter.setPrefWidth(0);
         // 过滤字段
@@ -181,10 +186,15 @@ public class NodeCreateUtil {
                 buttonDialogOption(filter, filterButton, "过滤字段", "请输入要过滤的字段名，多个以英文逗号分隔");
             }
         });
+        // 不需要过滤字段，则隐藏
+        if (!needFilter) {
+            filterButton.setManaged(false);
+        }
 
-        TextField append = new TextField();
+        TextArea append = new TextArea();
         // 隐藏控件
         append.setManaged(false);
+        append.setVisible(false);
         append.setPrefHeight(0);
         append.setPrefWidth(0);
         // 类中追加文本
@@ -197,6 +207,10 @@ public class NodeCreateUtil {
                 buttonDialogOption(append, appendButton, "类末尾追加文本", "请输入要追加到类末尾（注意：在结束符号}之前）的文本");
             }
         });
+        // 不需要追加文本，则隐藏
+        if (!needAppend) {
+            appendButton.setManaged(false);
+        }
 
         // 添加到行
         HBox hbox = new HBox();
@@ -206,7 +220,7 @@ public class NodeCreateUtil {
         return hbox;
     }
 
-    private void buttonDialogOption(TextField field, Button button, String title, String promptText) {
+    private void buttonDialogOption(TextArea field, Button button, String title, String promptText) {
         // 弹出一个文本输入框
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle(title);

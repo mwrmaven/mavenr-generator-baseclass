@@ -21,8 +21,8 @@ public enum JdbcTypeEnum {
     TIMESTAMP("TIMESTAMP", "TIMESTAMP", "java.util.Date"),
     // 数据库中的数字类型
     INTEGER("INTEGER", "INTEGER", "java.lang.Integer"),
-    DECIMAL("DECIMAL", "NUMBER", "java.math.BigDecimal"),
-    NUMBERPLUS("NUMBER", "NUMBER", "java.math.BigDecimal"),
+    DECIMAL("DECIMAL", "NUMERIC", "java.math.BigDecimal"),
+    NUMBERPLUS("NUMBER", "NUMERIC", "java.math.BigDecimal"),
     NUMBER("NUMBER", "NUMERIC", "java.math.BigDecimal"),
     TINYINT("TINYINT", "INTEGER", "java.lang.Integer"),
     INT("INT", "INTEGER", "java.lang.Integer");

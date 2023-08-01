@@ -96,6 +96,12 @@
                 <artifactId>orai18n</artifactId>
                 <version>${ojdbc8.version}</version>
             </dependency>
+            <!-- 动态计算 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-jexl3</artifactId>
+                <version>3.2.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
