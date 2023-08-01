@@ -152,7 +152,55 @@ public class DatabaseConfig {
                 databaseTableName,
                 packageBasePath);
 
-        Text tips = new Text("模板文件中可以使用的替代符号以及含义如下：");
+        StringBuilder tipsText = new StringBuilder();
+        tipsText.append("替代符号示例：${tableName}\n");
+        tipsText.append("\n");
+        tipsText.append("entity/VO/BO、mapper、service、serviceImpl文件中可以使用的替代符号以及含义如下：").append("\n");
+        tipsText.append(
+                "    packagePath 类文件对应的包路径（例如 com.mavenr.project.entity）\n" +
+                "    tableName 表英文名（例如 test）\n" +
+                "    tableNameCn 表中文名（例如 测试表）\n" +
+                "    className 类名（追加类名前和类名后信息的类名，例如：BeforeTestAfterVO）\n" +
+                "    originClassName 原类名（直接由表英文名转换的类名，例如 Test）\n" +
+                "    columnComments 字段注释（例如 创建人）\n" +
+                "    columnName 字段英文（例如 create_user）\n" +
+                "    columnType 字段类型（例如 int）\n" +
+                "    jdbcType MapperXml文件中字段类型映射（例如 NUMRIC）\n" +
+                "    createTime 生成代码时的时间，格式 yyyy-MM-dd HH:mm:ss\n" +
+                "    propertyName 表字段对应的类属性名称（例如 createUser）\n" +
+                "    propertyType 表字段对应的类属性的类型（例如 String）\n" +
+                "    entityClassName entity类名（例如 TestTable）\n" +
+                "    entityClassPropertyName 实体类作为类属性时的参数名（例如 testTable）\n" +
+                "    mapperClassName mapper类名（例如 TestTableMapper）\n" +
+                "    mapperClassPropertyName 映射类作为类属性时的参数名（例如 testTableMapper）\n" +
+                "    serviceClassName service类名（例如 TestTableService） \n" +
+                "    columnIndex 字段在表中的位置，从1开始\n" +
+                "        注：columnIndex可以进行简单计算，例如 ${columnIndex} 为 2，${columnIndex*2} 则为4；\n" +
+                "            特别注意的是，需要进行计算时，大括号中不能存在空格；\n" +
+                "            如果将运算符写在外面，则只是字符拼接，例如 ${columnIndex} 为 2，${columnIndex}*2 则为2*2。\n"
+        );
+        tipsText.append("\n");
+        tipsText.append("mapperXml文件中可以使用的替代符号以及含义如下：").append("\n");
+        tipsText.append(
+                "    tableName 表名（例如 test_table）\n" +
+                "    primaryKeyColumn 主键字段名（当前只适用于单个主键，如果有多个主键，则会出错，例如 ID）\n" +
+                "    primaryKeyProperty 主键在实体类中的属性名（例如 id）\n" +
+                "    primaryKeyType 主键的jdbc类型（例如 INTEGER）\n" +
+                "    columns 表中的所有字段，以英文逗号分隔（例如 id,create_time）\n" +
+                "    dbName 数据库名（例如 submit）\n" +
+                "    owner 数据库所属者（例如 REPORT_SUBMIT）\n" +
+                "    jdbcType 字段对应的jdbc类型（例如 NUMRIC）\n" +
+                "    entityClassPath 实体类的全路径（例如 com.mavenr.project.entity.Test）\n" +
+                "    mapperClassPath mapper类的全路径（例如 com.mavenr.project.mapper.TestMapper）\n" +
+                "    columnName 字段名称（例如 create_user）\n" +
+                "    propertyName 字段对应的实体类中的属性名（例如 createUser）\n" +
+                "    comma 逗号"
+        );
+
+        TextArea tips = new TextArea(tipsText.toString());
+        tips.setPrefWidth(600);
+        tips.setPrefHeight(200);
+        tips.setEditable(false);
         HBox mergeHbox = new HBox();
         mergeHbox.setSpacing(50);
         mergeHbox.getChildren().addAll(left, tips);
