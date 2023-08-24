@@ -244,4 +244,28 @@ public class CodeCreateUtil {
         return classInfo;
     }
 
+    public static ClassInfo createOnlyReplace(GeneratorConfig generatorConfig) {
+        // 遍历模板文件的行
+        BufferedReader br = generatorConfig.getBr();
+        String line = "";
+        StringBuilder code = new StringBuilder();
+        try {
+            // 遍历查询行中是否存在参数
+            while ((line = br.readLine()) != null) {
+                // 替换行代码中的参数
+                line = TransferUtil.replaceMapperXmlParamToValue(line, generatorConfig);
+                code.append(line).append("\n");
+            }
+        } catch (Exception e) {
+            System.out.println("解析模板文件出错！" + e.getMessage());
+            e.printStackTrace();
+        }
+
+        ClassInfo classInfo = ClassInfo.builder()
+                .fileName(generatorConfig.getTableNameCn() + "-" + generatorConfig.getTableName() + ".txt")
+                .code(code.toString())
+                .build();
+        return classInfo;
+    }
+
 }

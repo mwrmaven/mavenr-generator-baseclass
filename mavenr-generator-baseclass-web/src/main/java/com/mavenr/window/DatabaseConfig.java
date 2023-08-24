@@ -127,6 +127,9 @@ public class DatabaseConfig {
                 paramServiceImpl, booleanServiceImpl, "serviceImplChooser", "isServiceImpl", false, false);
         HBox serviceImplPackageField = nodeCreateUtil.createLabelAndTextField("包路径：", "", "");
         serviceImplChooser.getChildren().add(serviceImplPackageField);
+        // 只替换文件中的参数，不做逻辑处理
+        HBox onlyReplaceChooser = nodeCreateUtil.createLabelAndFileChooser("只替换文件中的数据库参数，不做逻辑处理：", "template/ServiceImpl.java",
+                paramServiceImpl, booleanServiceImpl, "onlyReplaceChooser", "isOnlyReplace", false, false);
 
         // 处理包基础路径变化
         changePackageBasePath(packageBasePath, entityPackageField, mapperPackageField, servicePackageField, serviceImplPackageField);
@@ -213,6 +216,7 @@ public class DatabaseConfig {
                 mapperXmlChooser,
                 serviceChooser,
                 serviceImplChooser,
+                onlyReplaceChooser,
                 bottomHbox);
 
         // 处理按钮触发
@@ -364,6 +368,8 @@ public class DatabaseConfig {
                             (serviceImplTemplateInfo.getPackagePath() == null || "".equals(serviceImplTemplateInfo.getPackagePath().trim()))) {
                         throw new Exception("serviceImpl的包路径不可为空");
                     }
+                    // 只替换文件中参数，不做逻辑处理
+                    TemplateInfo onlyReplaceTemplateInfo = formatTemplateInfo(children.get(8));
 
                     String outPath = System.getProperty("user.dir") + File.separator + "code";
                     BaseConfig bc = BaseConfig.builder()
@@ -379,6 +385,7 @@ public class DatabaseConfig {
                             .mapperXml(mapperXmlTemplateInfo)
                             .service(serviceTemplateInfo)
                             .serviceImpl(serviceImplTemplateInfo)
+                            .onlyReplace(onlyReplaceTemplateInfo)
                             .outPath(outPath)
                             .classNameBefore(before)
                             .classNameAfter(after)

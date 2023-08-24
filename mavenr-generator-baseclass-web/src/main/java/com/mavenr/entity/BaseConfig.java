@@ -53,6 +53,7 @@ public class BaseConfig {
     TemplateInfo mapperXml;
     TemplateInfo service;
     TemplateInfo serviceImpl;
+    TemplateInfo onlyReplace;
     /**
      * 文件输出路径
      */

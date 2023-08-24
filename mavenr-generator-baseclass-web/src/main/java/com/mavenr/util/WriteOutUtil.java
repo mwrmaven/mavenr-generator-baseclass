@@ -155,6 +155,23 @@ public class WriteOutUtil {
                     outputInterface.push(serviceImplClassInfo.getCode(), serviceImplClassInfo.getFileName(), outPath);
                     is.close();
                 }
+
+                TemplateInfo onlyReplace = baseConfig.getOnlyReplace();
+                if (onlyReplace.isSelected()) {
+                    // 获取模板路径
+                    String filePath = onlyReplace.getFilePath();
+                    InputStream is;
+                    if ("".equals(filePath)) {
+                        is = ClassLoader.getSystemResourceAsStream("template/ServiceImpl.java");
+                    } else {
+                        is = new FileInputStream(filePath);
+                    }
+                    br = new BufferedReader(new InputStreamReader(is, Charset.UTF_8.getType()));
+                    generatorConfig.setBr(br);
+                    ClassInfo onlyReplaceClassInfo = new OnlyReplaceGenerator().create(generatorConfig);
+                    outputInterface.push(onlyReplaceClassInfo.getCode(), onlyReplaceClassInfo.getFileName(), outPath);
+                    is.close();
+                }
             }
         }
     }

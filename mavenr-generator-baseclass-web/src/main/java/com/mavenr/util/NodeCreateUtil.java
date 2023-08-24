@@ -87,7 +87,6 @@ public class NodeCreateUtil {
         Label label = new Label(labelName);
         // 输入框
         TextField tf = new TextField();
-        tf.setDisable(true);
         tf.setPrefWidth(300);
         tf.setStyle("-fx-border-color: black; -fx-border-radius: 20; -fx-background-radius: 20");
         tf.setPromptText("模板路径");
