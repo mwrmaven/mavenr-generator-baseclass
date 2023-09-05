@@ -48,7 +48,7 @@ public class OracleDatabase extends DatabaseBasic{
             String[] split = tableNames.split(",");
             for (String t : split) {
                 Table table = Table.builder()
-                        .tableName(t)
+                        .tableName(t.toUpperCase())
                         .build();
                 tableList.add(table);
             }
