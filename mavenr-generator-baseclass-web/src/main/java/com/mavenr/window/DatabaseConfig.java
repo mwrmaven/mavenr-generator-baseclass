@@ -190,6 +190,7 @@ public class DatabaseConfig {
                 "    primaryKeyProperty 主键在实体类中的属性名（例如 id）\n" +
                 "    primaryKeyType 主键的jdbc类型（例如 INTEGER）\n" +
                 "    columns 表中的所有字段，以英文逗号分隔（例如 id,create_time）\n" +
+                "    columnsAsColCn 表中的所有字段和字段注释，以英文逗号分隔（例如 id AS ID,create_time AS 创建时间）\n" +
                 "    dbName 数据库名（例如 submit）\n" +
                 "    owner 数据库所属者（例如 REPORT_SUBMIT）\n" +
                 "    jdbcType 字段对应的jdbc类型（例如 NUMRIC）\n" +

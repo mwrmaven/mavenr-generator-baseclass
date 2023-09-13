@@ -226,6 +226,9 @@ public class TransferUtil {
                         case "${columns}":
                             result = result.replace("${columns}", columnList.stream().map(Column::getColumnName).collect(Collectors.joining(", ")));
                             break;
+                        case "${columnsAsColCn}":
+                            result = replaceByColAndCn(result, columnList);
+                            break;
                         case "${packagePath}":
                             result = result.replace("${packagePath}", generatorConfig.getPackagePath());
                             break;
@@ -288,4 +291,24 @@ public class TransferUtil {
         }
         return sb.toString();
     }
+
+    /**
+     * 替换字段名和字段中文名，例如 CREATE_TIME AS 创建时间
+     * @param result
+     * @param columnList
+     * @return
+     */
+    private static String replaceByColAndCn(String result, List<Column> columnList) {
+        String temp = columnList.stream().map(Column::getColumnName).collect(Collectors.joining(", "));
+        StringBuilder sb = new StringBuilder();
+        for (Column c : columnList) {
+            sb.append(c.getColumnName()).append(" AS ").append(c.getColumnNameCn()).append(",");
+        }
+        if (sb.length() > 0) {
+            temp = sb.substring(0, sb.length() - 1);
+        }
+
+        return result.replace("${columnsAsColCn}", temp);
+    }
+
 }
