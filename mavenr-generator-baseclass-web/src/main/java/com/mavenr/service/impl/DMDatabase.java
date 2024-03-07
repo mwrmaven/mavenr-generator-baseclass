@@ -6,6 +6,7 @@ import com.mavenr.entity.Table;
 import com.mavenr.enums.ColumnEnum;
 import com.mavenr.enums.JdbcTypeEnum;
 import com.mavenr.util.TransferUtil;
+import com.mysql.cj.util.StringUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,6 +23,112 @@ import java.util.stream.Collectors;
 public class DMDatabase extends DatabaseBasic{
     @Override
     public List<Table> columns(BaseConfig baseConfig) throws Exception {
+        String tableInfo = baseConfig.getTableInfo();
+        // 直接处理表信息
+        if (!StringUtils.isNullOrEmpty(tableInfo)) {
+            List<Table> tables = new ArrayList<>();
+            String[] split = tableInfo.split(";");
+            int length = split.length;
+            // 获取表所属
+            String last = split[length - 1];
+            String temp = last.substring(20);
+            int i = temp.indexOf("\"");
+            String owner = temp.substring(0, i);
+            // 获取表名
+            temp = last.substring(last.indexOf(".") + 2);
+            int j = temp.indexOf("\"");
+            String tableName = temp.substring(0, j);
+
+            String tableNameCn = "";
+            for (int k = 0; k < length; k++) {
+                String s = split[k];
+                if (s.startsWith("COMMENT ON")) {
+                    String t = s.substring(s.indexOf("IS"));
+                    t = t.replace("IS", "");
+                    t = t.trim();
+                    t = t.replaceAll("'", "");
+                    tableNameCn = t;
+                    break;
+                }
+            }
+
+            Map<String, Column> columnNameAndType = new HashMap<>();
+            Map<String, String> columnComments = new HashMap<>();
+            for (int k = 0; k < length; k++) {
+                String s = split[k];
+                if (k == 0) {
+                    // 字段名和类型
+                    s = s.substring(s.indexOf("(") + 2);
+                    String[] split1 = s.split(",\"");
+                    for (int m = 0; m < split1.length; m++) {
+                        String s1 = split1[m];
+                        String name = s1.substring(0, s1.indexOf("\""));
+                        String columnType = "VARCHAR";
+                        if (s1.contains("NUMBER")) {
+                            // 判断 data_scale的长度，大于0，则为小数，使用BigDecimal接收
+                            int dataScale = Integer.parseInt(s1.substring(s1.indexOf(",") + 1, s1.indexOf(")")));
+                            System.out.println("data_scale length is：" + dataScale);
+                            if (dataScale > 0) {
+                                columnType = "DECIMAL";
+                            }
+                        } else {
+                            ColumnEnum[] ces = ColumnEnum.values();
+                            for (int n = 0; n < ces.length; n++) {
+                                ColumnEnum ce = ces[n];
+                                if (s1.contains(ce.getColumnType())) {
+                                    columnType = ce.getColumnType();
+                                    break;
+                                }
+                            }
+                        }
+                        ColumnEnum columnType1 = ColumnEnum.getColumnType(columnType);
+
+                        Column column = Column.builder()
+                                .index(m + 1)
+                                .columnName(name)
+                                .columnType(columnType1.getColumnType())
+                                .jdbcType(JdbcTypeEnum.getByColumnType(columnType1.getColumnType()).getJdbcType())
+                                .propertyName(TransferUtil.toPropertyName(name))
+                                .propertyType(columnType1.getPropertyType())
+                                .build();
+
+                        columnNameAndType.put(name, column);
+                    }
+                } else if (k == 1) {
+                    continue;
+                } else {
+                    // 字段注释
+                    s = s.substring(s.indexOf(".") + 1);
+                    s = s.substring(s.indexOf(".") + 2);
+                    String name = s.substring(0, s.indexOf("\""));
+                    s = s.substring(s.indexOf("IS") + 2);
+                    s = s.trim();
+                    s = s.replaceAll("'", "");
+                    String nameCn = s;
+                    columnComments.put(name, nameCn);
+                }
+            }
+
+            List<Column> allColumns = new ArrayList<>();
+            for (String cname : columnComments.keySet()) {
+                Column column = columnNameAndType.get(cname);
+                String comment = columnComments.get(cname);
+                column.setColumnNameCn(comment);
+                allColumns.add(column);
+            }
+
+
+            Table table = new Table();
+            table.setOwner(owner);
+            table.setTableName(tableName);
+            table.setTableNameCn(tableNameCn);
+            table.setColumns(allColumns);
+
+            System.out.println(tableInfo);
+
+            tables.add(table);
+            return tables;
+        }
         // 数据库表名，多个表名使用英文逗号分隔（如果为空，则表示遍历所有表）
         String tableNames = baseConfig.getTableNames();
         // 是否扫描数据库中所有的表

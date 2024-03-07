@@ -9,6 +9,7 @@ import com.mavenr.systemenum.DatabaseTypeEnum;
 import com.mavenr.util.BatchButton;
 import com.mavenr.util.NodeCreateUtil;
 import com.mavenr.util.WriteOutUtil;
+import com.mysql.cj.util.StringUtils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -93,6 +94,7 @@ public class DatabaseConfig {
         databasePwd.setPrefWidth(threeWidthInRow);
 
         HBox databaseTableName = nodeCreateUtil.createLabelAndTextField("请输入表名（不写则遍历所有表；多个表名以,分隔）：", paramTableName, "databaseTableName");
+
         HBox packageBasePath = nodeCreateUtil.createLabelAndTextField("请输入包的基础路径：", paramPackageBasePath, "packageBasePath");
         HBox tipH = new HBox();
         tipH.setAlignment(Pos.CENTER);
@@ -130,6 +132,9 @@ public class DatabaseConfig {
         // 只替换文件中的参数，不做逻辑处理
         HBox onlyReplaceChooser = nodeCreateUtil.createLabelAndFileChooser("只替换文件中的数据库参数，不做逻辑处理：", "template/ServiceImpl.java",
                 paramServiceImpl, booleanServiceImpl, "onlyReplaceChooser", "isOnlyReplace", false, false);
+        // 建表语句信息
+        HBox tableInfo = nodeCreateUtil.createLabelAndTextField("请输入单张表的创建语句（当前只兼容达梦数据库）：", "", "tableInfo");
+        tableInfo.setPrefWidth(300);
 
         // 处理包基础路径变化
         changePackageBasePath(packageBasePath, entityPackageField, mapperPackageField, servicePackageField, serviceImplPackageField);
@@ -218,6 +223,7 @@ public class DatabaseConfig {
                 serviceChooser,
                 serviceImplChooser,
                 onlyReplaceChooser,
+                tableInfo,
                 bottomHbox);
 
         // 处理按钮触发
@@ -371,6 +377,8 @@ public class DatabaseConfig {
                     }
                     // 只替换文件中参数，不做逻辑处理
                     TemplateInfo onlyReplaceTemplateInfo = formatTemplateInfo(children.get(8));
+                    // 表创建语句
+                    String textInfoFieldValue = getTextFieldValue(children.get(9));
 
                     String outPath = System.getProperty("user.dir") + File.separator + "code";
                     BaseConfig bc = BaseConfig.builder()
@@ -390,6 +398,7 @@ public class DatabaseConfig {
                             .outPath(outPath)
                             .classNameBefore(before)
                             .classNameAfter(after)
+                            .tableInfo(textInfoFieldValue)
                             .build();
 
                     System.out.println(bc.toString());
@@ -480,7 +489,10 @@ public class DatabaseConfig {
             databaseBasic = new DMDatabase();
         }
         List<Table> result = new ArrayList<>();
-        databaseBasic.init(baseConfig);
+        if (StringUtils.isNullOrEmpty(baseConfig.getTableInfo())) {
+            databaseBasic.init(baseConfig);
+        }
+
         result = databaseBasic.columns(baseConfig);
         return result;
     }

@@ -68,4 +68,6 @@ public class BaseConfig {
      * 类名后追加
      */
     String classNameAfter;
+
+    String tableInfo;
 }
