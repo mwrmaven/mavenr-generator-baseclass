@@ -43,7 +43,7 @@ public class DMDatabase extends DatabaseBasic{
             for (int k = 0; k < length; k++) {
                 String s = split[k];
                 if (s.startsWith("COMMENT ON")) {
-                    String t = s.substring(s.indexOf("IS"));
+                    String t = s.substring(s.indexOf("IS "));
                     t = t.replace("IS", "");
                     t = t.trim();
                     t = t.replaceAll("'", "");
@@ -63,6 +63,10 @@ public class DMDatabase extends DatabaseBasic{
                     for (int m = 0; m < split1.length; m++) {
                         String s1 = split1[m];
                         String name = s1.substring(0, s1.indexOf("\""));
+                        String originalColumnType = s1.substring(s1.indexOf("\" ") + 2);
+                        if (originalColumnType.contains(" ")) {
+                            originalColumnType = originalColumnType.substring(0, originalColumnType.indexOf(" "));
+                        }
                         String columnType = "VARCHAR";
                         if (s1.contains("NUMBER")) {
                             // 判断 data_scale的长度，大于0，则为小数，使用BigDecimal接收
@@ -90,6 +94,7 @@ public class DMDatabase extends DatabaseBasic{
                                 .jdbcType(JdbcTypeEnum.getByColumnType(columnType1.getColumnType()).getJdbcType())
                                 .propertyName(TransferUtil.toPropertyName(name))
                                 .propertyType(columnType1.getPropertyType())
+                                .originalColumnType(originalColumnType)
                                 .build();
 
                         columnNameAndType.put(name, column);
@@ -101,7 +106,7 @@ public class DMDatabase extends DatabaseBasic{
                     s = s.substring(s.indexOf(".") + 1);
                     s = s.substring(s.indexOf(".") + 2);
                     String name = s.substring(0, s.indexOf("\""));
-                    s = s.substring(s.indexOf("IS") + 2);
+                    s = s.substring(s.indexOf("IS ") + 2);
                     s = s.trim();
                     s = s.replaceAll("'", "");
                     String nameCn = s;

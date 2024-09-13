@@ -24,4 +24,6 @@ public class Column{
     private boolean primaryKey;
     // 字段排序
     private Integer index;
+    // 原始字段类型和长度
+    private String originalColumnType;
 }
