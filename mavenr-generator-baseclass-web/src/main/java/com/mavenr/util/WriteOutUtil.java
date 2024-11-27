@@ -35,10 +35,18 @@ public class WriteOutUtil {
         String classNameAfter = baseConfig.getClassNameAfter();
         // 循环表信息
         for (Table item : tableList) {
+            // 遍历表信息
+            System.out.println("-------------------------------");
+            System.out.println(item.getTableName());
+            List<Column> columns1 = item.getColumns();
+            for (Column c : columns1) {
+                System.out.println(c.getColumnName() + " " + c.getOriginalColumnType() + " " + c.getColumnNameCn());
+            }
+            System.out.println("-------------------------------");
             System.out.println("开始解析表：" + item.toString());
             String tableName = item.getTableName();
             String tableNameCn = item.getTableNameCn();
-            List<Column> columns = item.getColumns();
+            List<Column> columns = columns1;
             String dbName = baseConfig.getName();
 
             if (columns == null || columns.size() == 0) {

@@ -43,8 +43,7 @@ public class DMDatabase extends DatabaseBasic{
             for (int k = 0; k < length; k++) {
                 String s = split[k];
                 if (s.startsWith("COMMENT ON")) {
-                    String t = s.substring(s.indexOf("IS "));
-                    t = t.replace("IS", "");
+                    String t = s.substring(s.indexOf("IS ") + 2);
                     t = t.trim();
                     t = t.replaceAll("'", "");
                     tableNameCn = t;
@@ -68,10 +67,10 @@ public class DMDatabase extends DatabaseBasic{
                             originalColumnType = originalColumnType.substring(0, originalColumnType.indexOf(" "));
                         }
                         String columnType = "VARCHAR";
-                        if (s1.contains("NUMBER")) {
+                        if (s1.contains("NUMBER") && s1.contains(",")) {
                             // 判断 data_scale的长度，大于0，则为小数，使用BigDecimal接收
                             int dataScale = Integer.parseInt(s1.substring(s1.indexOf(",") + 1, s1.indexOf(")")));
-                            System.out.println("data_scale length is：" + dataScale);
+                            System.out.println(s1 + " data_scale length is：" + dataScale);
                             if (dataScale > 0) {
                                 columnType = "DECIMAL";
                             }
