@@ -24,6 +24,9 @@ public class DMDatabase extends DatabaseBasic{
     @Override
     public List<Table> columns(BaseConfig baseConfig) throws Exception {
         String tableInfo = baseConfig.getTableInfo();
+//        System.out.println(tableInfo);
+        String[] split2 = tableInfo.split("\r\n");
+        System.out.println(split2.length);
         // 直接处理表信息
         if (!StringUtils.isNullOrEmpty(tableInfo)) {
             List<Table> tables = new ArrayList<>();
